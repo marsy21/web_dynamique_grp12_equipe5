@@ -5,7 +5,7 @@ include("connexion.php");
 $error = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = $_POST['email'];
+    $email = trim($_POST['email']);
     $mot_de_passe = $_POST['mot_de_passe'];
 
     $sql = "SELECT * FROM utilisateur WHERE email = ?";
@@ -17,35 +17,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($utilisateur && password_verify($mot_de_passe, $utilisateur['mot_de_passe'])) {
         $_SESSION['id_utilisateur'] = $utilisateur['id_utilisateur'];
-        header("Location: votrecompte.php");
+        $_SESSION['role'] = $utilisateur['role']; // utile si besoin
+
+        // Exemple : redirection selon rôle
+        if ($utilisateur['role'] == 'admin') {
+            header("Location: admin_dashboard.php");
+        } else {
+            header("Location: votrecompte.php");
+        }
         exit();
     } else {
         $error = "Email ou mot de passe incorrect.";
     }
 }
 ?>
-
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Connexion - Agora Francia</title>
-</head>
-<body>
-    <h1>Connexion</h1>
-
-    <?php if ($error): ?>
-        <p style="color:red;"><?php echo $error; ?></p>
-    <?php endif; ?>
-
-    <form method="post" action="login.php">
-        <label>Email :</label><br>
-        <input type="email" name="email" required><br><br>
-
-        <label>Mot de passe :</label><br>
-        <input type="password" name="mot_de_passe" required><br><br>
-
-        <button type="submit">Se connecter</button>
-    </form>
-</body>
-</html>
