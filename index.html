@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Agora Francia</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    .wrapper {
+      border: 2px solid black;
+      width: 90%;
+      margin: 20px auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 2px solid #ccc;
+    }
+
+    header h1 {
+      font-size: 2.5em;
+    }
+
+    header img {
+      height: 60px;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-around;
+      background-color: brown;
+      padding: 10px;
+      border-bottom: 2px solid #ccc;
+    }
+
+    nav a {
+      background-color: burlywood;
+      border: 1px solid beige;
+      border-radius: 10px;
+      padding: 10px 15px;
+      text-decoration: none;
+      color: #000;
+      font-weight: bold;
+      font-size: 1em;
+    }
+
+    section {
+      text-align: center;
+      color: brown;
+      font-weight: bold;
+    }
+
+  
+
+    /* Carousel Styles */
+    #carrousel {
+      position: relative;
+      width: 100%;
+      max-width: 600px;
+      height: 300px;
+      overflow: hidden;
+      margin: 30px auto;
+      border: 2px solid #ccc;
+      display: flex;
+      justify-content: center;
+      align-items: center; 
+    }
+
+    #carrousel ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    #carrousel ul li {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: none;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #carrousel ul li img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+
+    .controls button {
+      background-color: burlywood;
+      color: black;
+      border: none;
+      padding: 5px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .controls button:hover {
+      background-color: brown;
+    }
+
+    /* Ventes flash ligne */
+    .ventes-flash-ligne {
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      margin: 20px auto 40px auto;
+      padding: 10px;
+      flex-wrap: nowrap;
+    }
+
+    .ventes-flash-ligne .article {
+      width: 160px;
+      text-align: center;
+      background-color: #fff8f8;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    .ventes-flash-ligne .article img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 5px;
+      
+    }
+
+    .ventes-flash-ligne .article span {
+      display: block;
+      color: purple;
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+    footer {
+      border-top: 2px solid #ccc;
+      font-size: 1em;
+      color: brown;
+      font-weight: bold;
+      background-color: #f8f8ff;
+      padding: 20px;
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .footer-left {
+      text-align: left;
+    }
+
+    .footer-right img {
+      height: 80px;
+    }
+
+
+  </style>
+
+  <script>
+    $(document).ready(function () {
+      const $carrousel = $('#carrousel'),
+      $img = $carrousel.find('ul li'),
+      indexImg = $img.length - 1;
+      let i = 0;
+      let interval;
+
+      $img.hide();
+      $img.eq(i).show();
+
+      function showImage(index) {
+        $img.hide();
+        $img.eq(index).fadeIn();
+      }
+
+      function nextImage() {
+        i = (i + 1) > indexImg ? 0 : i + 1;
+        showImage(i);
+      }
+
+      function prevImage() {
+        i = (i - 1) < 0 ? indexImg : i - 1;
+        showImage(i);
+      }
+
+      $('.next').click(function () {
+        nextImage();
+        restartAutoSlide();
+      });
+
+      $('.prev').click(function () {
+        prevImage();
+        restartAutoSlide();
+      });
+
+      function startAutoSlide() {
+        interval = setInterval(nextImage, 4000);
+      }
+
+      function restartAutoSlide() {
+        clearInterval(interval);
+        startAutoSlide();
+      }
+
+      startAutoSlide();
+    });
+  </script>
+</head>
+
+<body>
+  <div class="wrapper">
+    <header>
+      <h1>Agora Francia</h1>
+      <img src="photos/logo.png" alt="Logo Agora">
+    </header>
+
+    <nav>
+      <a href="#">Accueil</a>
+      <a href="toutparcourir.html">Tout Parcourir</a>
+      <a href="#">Notifications</a>
+      <a href="#">Panier</a>
+      <a href="#">Votre Compte</a>
+    </nav>
+
+    <section>
+      <br>
+      <p>Nous sommes le meilleur site de ventes vintage de toute la France. Vous pouvez vendre, acheter ou même devenir un de nos fournisseurs. Inscrivez-vous vite !!!</p>
+     
+      <!-- Carrousel centré -->
+      <div id="carrousel">
+        
+        <ul>
+          <li><img src="photos/commodeblanche.png" alt="Image 1"></li>
+          <li><img src="photos/commodebois.png" alt="Image 2"></li>
+          <li><img src="photos/commodeverte.png" alt="Image 3"></li>
+          <li><img src="photos/fauteilblanc.png" alt="Image 4"></li>
+          <li><img src="photos/tablebassebois.png" alt="Image 5"></li>
+        </ul>
+      </div>
+
+      <div class="controls">
+        <button class="prev">⟨ Précédent</button>
+        <button class="next">Suivant ⟩</button>
+      </div>
+      <h2>Ventes flash</h2>
+      <!-- Ventes flash sur une ligne -->
+      <div class="ventes-flash-ligne">
+       
+        <div class="article">
+          <img src="photos/fauteilblanc.png" alt="Produit 1">
+          <span>45,00€</span>
+        </div>
+        <div class="article">
+          <img src="photos/commodebois.png" alt="Produit 2">
+          <span>75,99€</span>
+        </div>
+        <div class="article">
+          <img src="photos/tablebassebois.png" alt="Produit 3">
+          <span>39,00€</span>
+        </div>
+        <div class="article">
+          <img src="photos/commodeblanche.png" alt="Produit 4">
+          <span>64,00€</span>
+        </div>
+        <div class="article">
+          <img src="photos/commodeverte.png" alt="Produit 5">
+          <span>59,00€</span>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="footer-content">
+        <div class="footer-left">
+          <p>📍 Agora Francia</p>
+          <p>12 rue de victor hugo, 75015 Paris</p>
+          <p>📞 01 23 45 67 89</p>
+          <p>📧 contact@agorafrancia.fr</p>
+        </div>
+        <div class="footer-right">
+          <img src="photos/logo.png" alt="Logo Agora" />
+        </div>
+      </div>
+    </footer>
+
+  </div>
+</body>
+</html> 
