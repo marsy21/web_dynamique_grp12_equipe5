@@ -44,3 +44,7 @@ $utilisateur = $_SESSION['utilisateur'];
 <?php else: ?>
     <p>Voulez-vous vendre ? <a href="devenirvendeur.php">Devenir Vendeur</a></p>
 <?php endif; ?>
+
+<form method="post" action="logout.php">
+        <button type="submit">Se déconnecter</button>
+    </form>
