@@ -26,9 +26,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         mysqli_stmt_bind_param($stmt, "ssssssi", $adresse1, $adresse2, $ville, $code_postal, $pays, $telephone, $id);
     }
 
-    $from = $_SESSION['last_page'] ?? 'votrecompte.php';
-    header("Location: $from");
-    exit;
+    // **Exécuter la requête**
+    if (mysqli_stmt_execute($stmt)) {
+        // Redirection après succès
+        $from = $_SESSION['last_page'] ?? 'votrecompte.php';
+        header("Location: $from");
+        exit;
+    } else {
+        $erreur = "Erreur lors de l'enregistrement des données.";
+    }
 }
 ?>
 
