@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS `administrateurs` (
 --
 
 DROP TABLE IF EXISTS `articles`;
+
 CREATE TABLE IF NOT EXISTS `articles` (
   `id` int NOT NULL AUTO_INCREMENT,
   `id_vendeur` int NOT NULL,
@@ -47,6 +48,7 @@ CREATE TABLE IF NOT EXISTS `articles` (
   `description` text,
   `prix_initial` decimal(10,2) DEFAULT NULL,
   `categorie_id` int DEFAULT NULL,
+  `rarete` int DEFAULT NULL,
   `type_vente_id` int DEFAULT NULL,
   `qualite` varchar(255) DEFAULT NULL,
   `defaut` varchar(255) DEFAULT NULL,
@@ -58,33 +60,33 @@ CREATE TABLE IF NOT EXISTS `articles` (
   KEY `type_vente_id` (`type_vente_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+-- Insertion des articles (tous avec rareté = 1)
+INSERT INTO articles (id_vendeur, nom, description, prix_initial, categorie_id, rarete, type_vente_id, qualite, defaut) VALUES
+(1, 'Appareil photo', 'Appareil photo ancien de collection', 120.00, 1, 1, NULL, 'Bonne', NULL),
+(1, 'Commode blanche', 'Commode blanche style vintage', 150.00, 1, 1, NULL, 'Très bonne', NULL),
+(1, 'Commode bois', 'Commode en bois massif', 160.00, 1, 1, NULL, 'Bonne', NULL),
+(1, 'Commode verte', 'Commode verte originale', 145.00, 1, 1, NULL, 'Très bonne', NULL),
+(1, 'Disque vinyle', 'Tourne-disque rétro', 80.00, 1, 1, NULL, 'Fonctionnelle', NULL),
+(1, 'Fauteuil blanc', 'Fauteuil blanc chic et confortable', 95.00, 1, 1, NULL, 'Neuf', NULL),
+(1, 'Machine à écrire', 'Machine à écrire vintage', 110.00, 1, 1, NULL, 'Fonctionnelle', NULL),
+(1, 'Machine à coudre', 'Machine à coudre ancienne', 130.00, 1, 1, NULL, 'Fonctionnelle', NULL),
+(1, 'Micro', 'Microphone ancien', 75.00, 1, 1, NULL, 'Correcte', NULL),
+(1, 'Montre cuir', 'Montre à bracelet cuir', 60.00, 1, 1, NULL, 'Bonne', NULL),
+(1, 'Montre or', 'Montre à bracelet doré', 85.00, 1, 1, NULL, 'Très bonne', NULL),
+(1, 'Montre bleue', 'Montre moderne bleue', 55.00, 1, 1, NULL, 'Neuf', NULL),
+(1, 'Peinture 1', 'Peinture ancienne encadrée', 200.00, 1, 1, NULL, 'Bonne', NULL),
+(1, 'Peinture 2', 'Peinture paysage ancienne', 210.00, 1, 1, NULL, 'Très bonne', NULL),
+(1, 'Peinture 3', 'Peinture bord de lac', 220.00, 1, 1, NULL, 'Très bonne', NULL),
+(1, 'Pièce ancienne 1', 'Pièce de monnaie ancienne', 300.00, 1, 1, NULL, 'Bonne', NULL),
+(1, 'Pièce ancienne 2', 'Pièce rare de collection', 310.00, 1, 1, NULL, 'Bonne', NULL),
+(1, 'Pièce ancienne 3', 'Pièce historique', 320.00, 1, 1, NULL, 'Très bonne', NULL),
+(1, 'Radio ancienne', 'Radio vintage fonctionnelle', 90.00, 1, 1, NULL, 'Fonctionnelle', NULL),
+(1, 'Tableau 1', 'Tableau coloré bord de mer', 180.00, 1, 1, NULL, 'Bonne', NULL),
+(1, 'Tableau 2', 'La nuit étoilée reproduction', 190.00, 1, 1, NULL, 'Très bonne', NULL),
+(1, 'Tableau 3', 'Portrait de Van Gogh', 195.00, 1, 1, NULL, 'Très bonne', NULL),
+(1, 'Table basse bois', 'Table basse en bois', 100.00, 1, 1, NULL, 'Bonne', NULL),
+(1, 'Téléphone', 'Téléphone ancien en bakélite', 70.00, 1, 1, NULL, 'Fonctionnel', NULL);
 
--- Insertion des articles
-INSERT INTO articles (id_vendeur, nom, description, prix_initial, categorie_id, type_vente_id, qualite, defaut) VALUES
-(1, 'Appareil photo', 'Appareil photo ancien de collection', 120.00, 1, 1, 'Bonne', NULL),
-(1, 'Commode blanche', 'Commode blanche style vintage', 150.00, 1, 1, 'Très bonne', NULL),
-(1, 'Commode bois', 'Commode en bois massif', 160.00, 1, 1, 'Bonne', NULL),
-(1, 'Commode verte', 'Commode verte originale', 145.00, 1, 1, 'Très bonne', NULL),
-(1, 'Disque vinyle', 'Tourne-disque rétro', 80.00, 1, 1, 'Fonctionnelle', NULL),
-(1, 'Fauteuil blanc', 'Fauteuil blanc chic et confortable', 95.00, 1, 1, 'Neuf', NULL),
-(1, 'Machine à écrire', 'Machine à écrire vintage', 110.00, 1, 1, 'Fonctionnelle', NULL),
-(1, 'Machine à coudre', 'Machine à coudre ancienne', 130.00, 1, 1, 'Fonctionnelle', NULL),
-(1, 'Micro', 'Microphone ancien', 75.00, 1, 1, 'Correcte', NULL),
-(1, 'Montre cuir', 'Montre à bracelet cuir', 60.00, 1, 1, 'Bonne', NULL),
-(1, 'Montre or', 'Montre à bracelet doré', 85.00, 1, 1, 'Très bonne', NULL),
-(1, 'Montre bleue', 'Montre moderne bleue', 55.00, 1, 1, 'Neuf', NULL),
-(1, 'Peinture 1', 'Peinture ancienne encadrée', 200.00, 1, 1, 'Bonne', NULL),
-(1, 'Peinture 2', 'Peinture paysage ancienne', 210.00, 1, 1, 'Très bonne', NULL),
-(1, 'Peinture 3', 'Peinture bord de lac', 220.00, 1, 1, 'Très bonne', NULL),
-(1, 'Pièce ancienne 1', 'Pièce de monnaie ancienne', 300.00, 1, 1, 'Bonne', NULL),
-(1, 'Pièce ancienne 2', 'Pièce rare de collection', 310.00, 1, 1, 'Bonne', NULL),
-(1, 'Pièce ancienne 3', 'Pièce historique', 320.00, 1, 1, 'Très bonne', NULL),
-(1, 'Radio ancienne', 'Radio vintage fonctionnelle', 90.00, 1, 1, 'Fonctionnelle', NULL),
-(1, 'Tableau 1', 'Tableau coloré bord de mer', 180.00, 1, 1, 'Bonne', NULL),
-(1, 'Tableau 2', 'La nuit étoilée reproduction', 190.00, 1, 1, 'Très bonne', NULL),
-(1, 'Tableau 3', 'Portrait de Van Gogh', 195.00, 1, 1, 'Très bonne', NULL),
-(1, 'Table basse bois', 'Table basse en bois', 100.00, 1, 1, 'Bonne', NULL),
-(1, 'Téléphone', 'Téléphone ancien en bakélite', 70.00, 1, 1, 'Fonctionnel', NULL);
 
 
 -- --------------------------------------------------------

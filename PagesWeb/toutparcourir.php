@@ -183,7 +183,7 @@ $db_found = mysqli_select_db($db_handle, $database);
     <footer>
       <div class="footer-content">
         <div class="footer-left">
-          <p>📍 Agora Franciaaaaaa bebe mama</p>
+          <p>📍 Agora Francia</p>
           <p>12 rue de Victor Hugo, 75015 Paris</p>
           <p>📞 01 23 45 67 89</p>
           <p>📧 contact@agorafrancia.fr</p>
