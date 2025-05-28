@@ -83,8 +83,8 @@ mysqli_close($db_handle);
     #carrousel {
       position: relative;
       width: 100%;
-      max-width: 600px;
-      height: 300px;
+      max-width: 800px;
+      height: 500px;
       overflow: hidden;
       margin: 30px auto;
       border: 2px solid #ccc;
@@ -112,10 +112,13 @@ mysqli_close($db_handle);
     }
 
     #carrousel ul li img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
-    }
+    width: auto;
+    height: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    display: block;
+    margin: auto;
+  }
 
     .controls {
       display: flex;
