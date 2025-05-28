@@ -1,11 +1,16 @@
-<!DOCTYPE html> 
+<?php
+$database = "agora_francia";
+$db_handle = mysqli_connect('localhost', 'root', '');
+$db_found = mysqli_select_db($db_handle, $database);
+?>
+
+<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
   <title>Agora Francia</title>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <style>
-    /* Styles identiques à ceux que tu as déjà définis */
     * {
       margin: 0;
       padding: 0;
@@ -58,14 +63,15 @@
       text-align: center;
       color: brown;
       font-weight: bold;
+      margin-top: 20px;
     }
 
-    .article-grid {
+    .articles-container {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
       gap: 20px;
-      margin: 20px;
+      padding: 20px;
     }
 
     .article-card {
@@ -75,6 +81,11 @@
       border: 1px solid #ddd;
       border-radius: 10px;
       padding: 10px;
+      transition: transform 0.2s ease;
+    }
+
+    .article-card:hover {
+      transform: scale(1.05);
     }
 
     .article-card img {
@@ -116,7 +127,6 @@
     .footer-right img {
       height: 80px;
     }
-
   </style>
 </head>
 
@@ -129,25 +139,21 @@
 
     <nav>
       <a href="index.html">Accueil</a>
-      <a href="#">Tout Parcourir</a>
+      <a href="toutparcourir.php">Tout Parcourir</a>
       <a href="#">Notifications</a>
       <a href="#">Panier</a>
       <a href="#">Votre Compte</a>
     </nav>
 
     <section>
-      <p>Voici nos articles disponibles :</p>
+      <p>Nous sommes le meilleur site de ventes vintage de toute la France. Découvrez nos trésors !</p>
     </section>
 
-    <section class="article-grid">
+    <div class="articles-container">
       <?php
-      $database = "agora_francia";
-      $db_handle = mysqli_connect('localhost', 'root', '');
-      $db_found = mysqli_select_db($db_handle, $database);
-
       if ($db_found) {
           $sql = "
-              SELECT a.nom, a.prix_initial, p.url 
+              SELECT a.id, a.nom, a.prix_initial, p.url 
               FROM articles a
               JOIN photos p ON a.id = p.article_id
               LIMIT 18
@@ -155,15 +161,16 @@
           $result = mysqli_query($db_handle, $sql);
 
           while ($data = mysqli_fetch_assoc($result)) {
+              $id = $data['id'];
               $nom = $data['nom'];
               $prix = number_format($data['prix_initial'], 2, ',', '') . "€";
               $img_path = "Articles/Images/" . $data['url'];
 
-              echo "<div class='article-card'>";
-              echo "<img src='$img_path' alt='$nom' />";
-              echo "<div class='nom'>$nom</div>";
+              echo "<a href='monarticle.php?id=$id' class='article-card'>";
+              echo "<img src='$img_path' alt='" . htmlspecialchars($nom) . "' />";
+              echo "<div class='nom'>" . htmlspecialchars($nom) . "</div>";
               echo "<div class='prix'>$prix</div>";
-              echo "</div>";
+              echo "</a>";
           }
       } else {
           echo "<p>Erreur de connexion à la base de données.</p>";
@@ -171,7 +178,7 @@
 
       mysqli_close($db_handle);
       ?>
-    </section>
+    </div>
 
     <footer>
       <div class="footer-content">
