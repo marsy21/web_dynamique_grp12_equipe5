@@ -35,3 +35,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Connexion</title>
+</head>
+<body>
+    <h1>Connexion</h1>
+    <form method="post">
+        <label>Email : <input type="email" name="email" required></label><br>
+        <label>Mot de passe : <input type="password" name="mot_de_passe" required></label><br>
+        <button type="submit">Se connecter</button>
+    </form>
+    <p style="color:red"><?= $erreur ?></p>
+    <p>Pas encore de compte ? <a href="creationdecompteu.php">Créer un compte</a></p>
+</body>
+</html>
