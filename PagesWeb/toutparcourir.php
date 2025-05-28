@@ -138,11 +138,11 @@ $db_found = mysqli_select_db($db_handle, $database);
     </header>
 
     <nav>
-      <a href="index.html">Accueil</a>
+      <a href="index.php">Accueil</a>
       <a href="toutparcourir.php">Tout Parcourir</a>
       <a href="#">Notifications</a>
       <a href="#">Panier</a>
-      <a href="#">Votre Compte</a>
+      <a href="votrecompte.php">Votre Compte</a>
     </nav>
 
     <section>
