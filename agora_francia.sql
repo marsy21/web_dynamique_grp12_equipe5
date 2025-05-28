@@ -305,7 +305,7 @@ CREATE TABLE IF NOT EXISTS `utilisateurs` (
   `prenom` varchar(100) NOT NULL,
   `email` varchar(190) NOT NULL,
   `mot_de_passe` varchar(255) NOT NULL,
-  `role` enum('admin','vendeur','client') NOT NULL,
+  `role` enum('admin','utilisateur') NOT NULL,
   `date_creation` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
