@@ -1,3 +1,44 @@
+
+<?php
+session_start();
+if (!isset($_SESSION['utilisateur'])) {
+    header("Location: connexion.php");
+    exit;
+}
+
+include 'db.php';
+$id = $_SESSION['utilisateur']['id'];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $pseudo = mysqli_real_escape_string($db, $_POST['pseudo']);
+    $photo_profil = $_FILES['photo_profil']['name'] ?? null;
+    $image_fond = $_FILES['image_fond']['name'] ?? null;
+
+    // upload des images (exemple simplifié)
+    if ($photo_profil) {
+        move_uploaded_file($_FILES['photo_profil']['tmp_name'], "uploads/$photo_profil");
+    }
+    if ($image_fond) {
+        move_uploaded_file($_FILES['image_fond']['tmp_name'], "uploads/$image_fond");
+    }
+
+    // vérifier si l'utilisateur est déjà vendeur
+    $check = mysqli_query($db, "SELECT * FROM vendeurs WHERE id = $id");
+    if (mysqli_num_rows($check) == 0) {
+        $sql = "INSERT INTO vendeurs (id, pseudo, photo_profil, image_fond) 
+                VALUES ($id, '$pseudo', '$photo_profil', '$image_fond')";
+        mysqli_query($db, $sql);
+    } else {
+        $sql = "UPDATE vendeurs SET pseudo='$pseudo', photo_profil='$photo_profil', image_fond='$image_fond' 
+                WHERE id=$id";
+        mysqli_query($db, $sql);
+    }
+
+    $from = $_SESSION['last_page'] ?? 'votrecompte.php';
+    header("Location: $from");
+    exit;
+}
+?>
 <?php
 session_start();
 if (!isset($_SESSION['utilisateur'])) {
