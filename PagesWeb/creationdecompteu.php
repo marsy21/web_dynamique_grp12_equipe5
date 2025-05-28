@@ -1,4 +1,8 @@
 <?php
+session_start();
+include 'db.php';
+
+
 $erreur = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -13,7 +17,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $erreur = "Email invalide.";
     } else {
         $mdp_hash = password_hash($mdp, PASSWORD_DEFAULT);
-        $db = mysqli_connect('localhost', 'root', '', 'agora_francia');
 
         if ($db) {
             $email = mysqli_real_escape_string($db, $email);
@@ -26,11 +29,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $sql = "INSERT INTO utilisateurs (nom, prenom, email, mot_de_passe, role) 
                         VALUES ('$nom', '$prenom', '$email', '$mdp_hash', 'client')";
                 if (mysqli_query($db, $sql)) {
-                    header("Location: connexion.php");
-                    exit;
+                    $id_utilisateur = mysqli_insert_id($db);
+                    $sql_user = "SELECT * FROM utilisateurs WHERE id = $id_utilisateur";
+                    $res_user = mysqli_query($db, $sql_user);
+                    
+                    if ($res_user && mysqli_num_rows($res_user) == 1) {
+                        $_SESSION['utilisateur'] = mysqli_fetch_assoc($res_user);
+                        header("Location: votrecompte.php");
+                        exit;
+                    } else {
+                        $erreur = "Erreur lors de la récupération de vos informations.";
+                    }
                 } else {
                     $erreur = "Erreur lors de la création du compte.";
                 }
+
             }
             mysqli_close($db);
         } else {
@@ -55,5 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <button type="submit">Créer le compte</button>
     </form>
     <p style="color:red"><?= $erreur ?></p>
+    <p>Vous avez deja un compte ? <a href="connexion.php"> Se connecter </a></p>
+
 </body>
 </html>

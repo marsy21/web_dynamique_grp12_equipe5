@@ -1,6 +1,8 @@
 <?php
 session_start();
 $erreur = '';
+include 'db.php';
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email']);
@@ -9,7 +11,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($email) || empty($mdp)) {
         $erreur = "Tous les champs doivent être remplis.";
     } else {
-        $db = mysqli_connect('localhost', 'root', '', 'agora_francia');
 
         if ($db) {
             $email = mysqli_real_escape_string($db, $email);
