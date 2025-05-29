@@ -81,10 +81,10 @@ nav a[href="votrecompte.php"] {
     </nav>
 
     <section>
-        <h1>Bienvenue <?= htmlspecialchars($utilisateur['prenom']) ?> <?= htmlspecialchars($utilisateur['nom']) ?></h1>
+        <h1>Bienvenue <?= htmlspecialchars($utilisateur['prenom']) ?> <?= htmlspecialchars($utilisateur['nom']) ?></h1><br>
 <p>Email : <?= htmlspecialchars($utilisateur['email']) ?></p>
 <p>Date de création : <?= htmlspecialchars($utilisateur['date_creation']) ?></p>
-
+<br>
 <?php if ($message): ?>
     <p style="color:green;"><?= $message ?></p>
 <?php endif; ?>
@@ -109,8 +109,9 @@ nav a[href="votrecompte.php"] {
     <p>Souhaitez-vous acheter ? <a href="devenirclient.php">Devenir Client</a></p>
 <?php endif; ?>
 
+
 <?php if ($is_vendeur): ?>
-    <h3>Informations Vendeur</h3>
+    <h3><br>Informations Vendeur</h3>
     <?php if ($edit_mode === 'vendeur'): ?>
         <form method="post">
             <label>Pseudo : <input type="text" name="pseudo" value="<?= htmlspecialchars($vendeur_info['pseudo']) ?>"></label><br>
@@ -122,10 +123,41 @@ nav a[href="votrecompte.php"] {
             <li>Pseudo : <?= htmlspecialchars($vendeur_info['pseudo']) ?></li>
         </ul>
         <a href="?edit=vendeur"><button>Modifier infos vendeur</button></a>
+        <h1><br>Vos articles en ventes : </h1>
+        <?php
+// Récupération des articles du vendeur
+$res_articles = mysqli_query($db, "SELECT * FROM articles WHERE id_vendeur = $id");
+
+if (mysqli_num_rows($res_articles) > 0): ?>
+    <h3><br>Vos articles en vente :</h3>
+    <div style="display:flex; flex-wrap:wrap; gap: 20px;">
+        <?php while ($article = mysqli_fetch_assoc($res_articles)): ?>
+            <div style="border:1px solid #ccc; padding:10px; width:250px;">
+                <a href="article.php?id=<?= $article['id'] ?>">
+                    <img src="<?= htmlspecialchars($article['image_url'] ?? 'Articles/Images/default.jpg') ?>" alt="Image" style="width:100%;">
+                    <h4><?= htmlspecialchars($article['titre']) ?></h4>
+                </a>
+                <p>Prix : <?= htmlspecialchars($article['prix']) ?> €</p>
+                <p>Type de vente : <?= htmlspecialchars($article['type_vente']) ?></p>
+                <form method="post" action="supprimer_article.php" onsubmit="return confirm('Supprimer cet article ?');">
+                    <input type="hidden" name="article_id" value="<?= $article['id'] ?>">
+                    <button type="submit">🗑 Supprimer</button>
+                </form>
+            </div>
+        <?php endwhile; ?>
+    </div>
+<?php else: ?>
+    <p><br>Vous n'avez publié aucun article pour le moment.</p>
+<?php endif; ?>
+<br>
+<a href="ajouter_article.php"><button>➕ Ajouter un article</button></a>
+
+
     <?php endif; ?>
 <?php else: ?>
-    <p>Souhaitez-vous vendre ? <a href="devenirvendeur.php">Devenir Vendeur</a></p>
+    <p><br>Souhaitez-vous vendre ? <a href="devenirvendeur.php">Devenir Vendeur</a></p>
 <?php endif; ?>
+<br><br>
 
 <form method="post" action="logout.php">
     <button type="submit">Se déconnecter</button>

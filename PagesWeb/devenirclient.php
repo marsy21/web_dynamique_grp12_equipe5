@@ -10,6 +10,7 @@ $id = $_SESSION['utilisateur']['id'];
 $erreur = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Sécurisation des champs "Adresse"
     $adresse1 = mysqli_real_escape_string($db, $_POST['adresse1'] ?? '');
     $adresse2 = mysqli_real_escape_string($db, $_POST['adresse2'] ?? '');
     $ville = mysqli_real_escape_string($db, $_POST['ville'] ?? '');
@@ -17,6 +18,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pays = mysqli_real_escape_string($db, $_POST['pays'] ?? '');
     $telephone = mysqli_real_escape_string($db, $_POST['telephone'] ?? '');
 
+    // Sécurisation des champs "Carte"
+    $type_carte = mysqli_real_escape_string($db, $_POST['type_carte'] ?? '');
+    $numero_carte = mysqli_real_escape_string($db, $_POST['numero_carte'] ?? '');
+    $nom_carte = mysqli_real_escape_string($db, $_POST['nom_carte'] ?? '');
+    $expiration = mysqli_real_escape_string($db, $_POST['expiration'] ?? '');
+    $code_securite = mysqli_real_escape_string($db, $_POST['code_securite'] ?? '');
+
+    // Traitement adresse client
     $check = mysqli_query($db, "SELECT * FROM clients WHERE id = $id");
     if (mysqli_num_rows($check) == 0) {
         $stmt = mysqli_prepare($db, "INSERT INTO clients (id, adresse1, adresse2, ville, code_postal, pays, telephone) VALUES (?, ?, ?, ?, ?, ?, ?)");
@@ -26,16 +35,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         mysqli_stmt_bind_param($stmt, "ssssssi", $adresse1, $adresse2, $ville, $code_postal, $pays, $telephone, $id);
     }
 
-    // **Exécuter la requête**
-    if (mysqli_stmt_execute($stmt)) {
-        // Redirection après succès
+    // Exécution de l'insertion ou mise à jour adresse
+    if (!mysqli_stmt_execute($stmt)) {
+        $erreur = "Erreur lors de l'enregistrement de l'adresse.";
+    }
+
+    // Traitement carte bancaire
+    $verif = mysqli_query($db, "SELECT * FROM cartesreelles WHERE numero_carte = '$numero_carte'");
+    if (mysqli_num_rows($verif) == 0) {
+        $stmt_carte = mysqli_prepare($db, "INSERT INTO cartesreelles (type_carte, numero_carte, nom_carte, expiration, code_securite) VALUES (?, ?, ?, ?, ?)");
+        mysqli_stmt_bind_param($stmt_carte, "sssss", $type_carte, $numero_carte, $nom_carte, $expiration, $code_securite);
+
+        if (!mysqli_stmt_execute($stmt_carte)) {
+            $erreur = "Erreur lors de l'enregistrement de la carte.";
+        }
+    } else {
+        $erreur = "Cette carte existe déjà dans notre système.";
+    }
+
+    // Redirection uniquement si tout s'est bien passé
+    if (empty($erreur)) {
         $from = $_SESSION['last_page'] ?? 'votrecompte.php';
         header("Location: $from");
         exit;
     } else {
-        $erreur = "Erreur lors de l'enregistrement des données.";
+        echo "<p style='color:red;'>$erreur</p>";
     }
 }
+
+
 ?>
 
 
@@ -76,14 +104,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <p style="color:red;"><?= htmlspecialchars($erreur) ?></p>
     <?php endif; ?>
     <form method="post">
-        <label>Adresse 1 : <input type="text" name="adresse1" required></label><br><br>
-        <label>Adresse 2 : <input type="text" name="adresse2"></label><br><br>
-        <label>Ville : <input type="text" name="ville" required></label><br><br>
-        <label>Code postal : <input type="text" name="code_postal" required></label><br><br>
-        <label>Pays : <input type="text" name="pays" required></label><br><br>
-        <label>Téléphone : <input type="text" name="telephone" required></label><br><br>
-        <button type="submit">Valider</button>
-    </form>
+    <h2>Adresse de livraison</h2>
+    <label>Adresse 1 : <input type="text" name="adresse1" required></label><br><br>
+    <label>Adresse 2 : <input type="text" name="adresse2"></label><br><br>
+    <label>Ville : <input type="text" name="ville" required></label><br><br>
+    <label>Code postal : <input type="text" name="code_postal" required></label><br><br>
+    <label>Pays : <input type="text" name="pays" required></label><br><br>
+    <label>Téléphone : <input type="text" name="telephone" required></label><br><br>
+
+    <h2>Informations de paiement</h2>
+    <label>Type de carte :
+        <select name="type_carte" required>
+            <option value="">--Sélectionner--</option>
+            <option value="Visa">Visa</option>
+            <option value="MasterCard">MasterCard</option>
+            <option value="AmericanExpress">American Express</option>
+            <option value="PayPal">PayPal</option>
+        </select>
+    </label><br><br>
+
+    <label>Numéro de carte : <input type="text" name="numero_carte" maxlength="20" required></label><br><br>
+    <label>Nom sur la carte : <input type="text" name="nom_carte" maxlength="100" required></label><br><br>
+    <label>Date d'expiration : <input type="date" name="expiration" required></label><br><br>
+    <label>Code de sécurité : <input type="text" name="code_securite" maxlength="4" required></label><br><br>
+    <label>
+  <input type="checkbox" name="accepte_clause" required>
+  Je reconnais qu’en faisant une offre sur un article, je suis légalement tenu(e) de l’acheter si le vendeur accepte mon offre.
+</label><br><br>
+
+
+    <button type="submit" name="valider_formulaire">Valider</button>
+</form>
+
+
+  
     <p><a href="votrecompte.php">Revenir a la page Votre Comte </a></p>
     </section>
 
