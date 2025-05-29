@@ -41,6 +41,8 @@ $client = estClient($db);
 <head>
   <meta charset="UTF-8">
   <title>Détail de l'article</title>
+    <link rel="stylesheet" href="style.css">
+
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -113,8 +115,23 @@ $client = estClient($db);
   </style>
 </head>
 <body>
+  <body>
+  <div class="wrapper">
+    <header>
+      <h1>Agora Francia</h1>
+      <img src="Articles/Images/logo.png" alt="Logo Agora">
+    </header>
 
-<?php if ($article): ?>
+    <nav>
+      <a href="index.php">Accueil</a>
+      <a href="toutparcourir.php">Tout Parcourir</a>
+      <a href="#">Notifications</a>
+      <a href="panier.php">Panier</a>
+      <a href="votrecompte.php">Votre Compte</a>
+    </nav>
+
+    <section>
+      <?php if ($article): ?>
   <div class="container">
     <div class="image">
       <img src="Articles/Images/<?= $article['url'] ? htmlspecialchars($article['url']) : 'default.jpg' ?>" alt="<?= htmlspecialchars($article['nom']) ?>">
@@ -127,7 +144,6 @@ $client = estClient($db);
       <div class="categorie"><strong>Catégorie :</strong> <?= htmlspecialchars($article['categorie']) ?></div>
       <div class="type_vente"><strong>Type de vente :</strong> <?= htmlspecialchars($article['type_vente']) ?></div>
       <div class="date"><strong>Date de mise en vente :</strong> <?= htmlspecialchars($article['date_publication']) ?></div>
-
       <?php
         // Déterminer le texte du bouton selon type_vente
         $typeVente = strtolower($article['type_vente']);
@@ -160,6 +176,30 @@ $client = estClient($db);
 <?php else: ?>
   <p style="text-align:center; color:red;">Article introuvable.</p>
 <?php endif; ?>
+
+    </section>
+
+  
+
+
+
+      
+  <footer>
+      <div class="footer-content">
+        <div class="footer-left">
+          <p>📍 Agora Francia</p>
+          <p>12 rue de Victor Hugo, 75015 Paris</p>
+          <p>📞 01 23 45 67 89</p>
+          <p>📧 contact@agorafrancia.fr</p>
+        </div>
+        <div class="footer-right">
+          <img src="Articles/Images/logo.png" alt="Logo Agora">
+        </div>
+      </div>
+    </footer>
+  </div>
+
+
 
 </body>
 </html>

@@ -217,7 +217,7 @@ mysqli_close($db);
       <a href="index.php">Accueil</a>
       <a href="toutparcourir.php">Tout Parcourir</a>
       <a href="#">Notifications</a>
-      <a href="#">Panier</a>
+      <a href="panier.php">Panier</a>
       <a href="votrecompte.php">Votre Compte</a>
     </nav>
 
