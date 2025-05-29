@@ -83,29 +83,7 @@ if (isset($_SESSION['utilisateur'])) {
 			font-weight: bold;
 		}
 
-		footer {
-			border-top: 2px solid #ccc;
-			font-size: 1em;
-			color: brown;
-			font-weight: bold;
-			background-color: #f8f8ff;
-			padding: 20px;
-		}
-
-		.footer-content {
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			flex-wrap: wrap;
-		}
-
-		.footer-left {
-			text-align: left;
-		}
-
-		.footer-right img {
-			height: 80px;
-		}
+		
 	</style>
 </head>
 

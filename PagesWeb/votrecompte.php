@@ -42,9 +42,46 @@ $is_vendeur = mysqli_num_rows($res_vendeur) > 0;
 $vendeur_info = $is_vendeur ? mysqli_fetch_assoc($res_vendeur) : null;
 ?>
 
-<link rel="stylesheet" href="style.css">
 
-<h1>Bienvenue <?= htmlspecialchars($utilisateur['prenom']) ?> <?= htmlspecialchars($utilisateur['nom']) ?></h1>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Agora Francia</title>
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    li {
+  list-style-type: none;
+}
+nav a[href="votrecompte.php"] {
+  background-color: orange;
+  color: white;
+}
+
+
+  </style>
+
+
+</head>
+
+<body>
+  <div class="wrapper">
+    <header>
+      <h1>Agora Francia</h1>
+      <img src="Articles/Images/logo.png" alt="Logo Agora">
+    </header>
+
+    <nav>
+      <a href="index.php">Accueil</a>
+      <a href="toutparcourir.php">Tout Parcourir</a>
+      <a href="#">Notifications</a>
+      <a href="#">Panier</a>
+      <a href="votrecompte.php">Votre Compte</a>
+    </nav>
+
+    <section>
+        <h1>Bienvenue <?= htmlspecialchars($utilisateur['prenom']) ?> <?= htmlspecialchars($utilisateur['nom']) ?></h1>
 <p>Email : <?= htmlspecialchars($utilisateur['email']) ?></p>
 <p>Date de création : <?= htmlspecialchars($utilisateur['date_creation']) ?></p>
 
@@ -93,3 +130,22 @@ $vendeur_info = $is_vendeur ? mysqli_fetch_assoc($res_vendeur) : null;
 <form method="post" action="logout.php">
     <button type="submit">Se déconnecter</button>
 </form>
+     
+    </section>
+
+    <footer>
+      <div class="footer-content">
+        <div class="footer-left">
+          <p>📍 Agora Francia</p>
+          <p>12 rue de Victor Hugo, 75015 Paris</p>
+          <p>📞 01 23 45 67 89</p>
+          <p>📧 contact@agorafrancia.fr</p>
+        </div>
+        <div class="footer-right">
+          <img src="Articles/Images/logo.png" alt="Logo Agora">
+        </div>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
