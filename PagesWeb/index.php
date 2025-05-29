@@ -51,10 +51,11 @@ mysqli_close($db);
   <link rel="stylesheet" href="style.css">
 
   <style>
+      nav a[href="index.php"] {
+      background-color: orange;
+      color: white;
+    }
 
-    
-
- 
 
     #carrousel {
       position: relative;
@@ -211,7 +212,7 @@ mysqli_close($db);
     </header>
 
     <nav>
-      <a href="#">Accueil</a>
+      <a href="index.php">Accueil</a>
       <a href="toutparcourir.php">Tout Parcourir</a>
       <a href="#">Notifications</a>
       <a href="#">Panier</a>

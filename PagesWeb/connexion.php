@@ -42,14 +42,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Agora Francia</title>
+  <title>connexion</title>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <link rel="stylesheet" href="style.css">
   <style>
     nav a[href="votrecompte.php"] {
-  background-color: orange;
-  color: white;
-}
+    background-color: orange;
+    color: white;
+    }
   </style>
 
 </head>

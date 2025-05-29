@@ -47,7 +47,7 @@ $vendeur_info = $is_vendeur ? mysqli_fetch_assoc($res_vendeur) : null;
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Agora Francia</title>
+  <title>Votre Compte</title>
   <link rel="stylesheet" href="style.css">
 
   <style>
