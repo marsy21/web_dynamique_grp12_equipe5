@@ -1,22 +1,45 @@
 <?php
-$database = "agora_francia";
-$db_handle = mysqli_connect('localhost', 'root', '');
-$db_found = mysqli_select_db($db_handle, $database);
+session_start();
+include 'db.php';
 
-$articles = [];
+$connect_msg = "Nous sommes le meilleur site de ventes vintage de toute la France. Vous pouvez vendre, acheter ou même devenir un de nos fournisseurs. Inscrivez-vous vite !!!";
 
-if ($db_found) {
-    $sql = "SELECT a.id, a.nom, a.prix_initial, p.url 
-            FROM articles a 
-            JOIN photos p ON a.id = p.article_id 
-            LIMIT 10";
-    $result = mysqli_query($db_handle, $sql);
+$is_client = false;
+$is_vendeur = false;
+$pseudo_vendeur = null;
 
-    while ($data = mysqli_fetch_assoc($result)) {
-        $articles[] = $data;
+if (isset($_SESSION['utilisateur'])) {
+    $id = $_SESSION['utilisateur']['id'];
+    $utilisateur = $_SESSION['utilisateur'];
+
+    $res_client = mysqli_query($db, "SELECT * FROM clients WHERE id = $id");
+    $is_client = mysqli_num_rows($res_client) > 0;
+
+    $res_vendeur = mysqli_query($db, "SELECT * FROM vendeurs WHERE id = $id");
+    $is_vendeur = mysqli_num_rows($res_vendeur) > 0;
+    $pseudo_vendeur = $is_vendeur ? mysqli_fetch_assoc($res_vendeur)['pseudo'] : null;
+
+    $connect_msg = "Connecté";
+    if ($is_client && $is_vendeur) {
+        $connect_msg = "Connecté Client et Vendeur $pseudo_vendeur";
+    } elseif ($is_client) {
+        $connect_msg = "Connecté Client";
+    } elseif ($is_vendeur) {
+        $connect_msg = "Connecté $pseudo_vendeur";
     }
 }
-mysqli_close($db_handle);
+
+// Récupération des articles
+$articles = [];
+$sql = "SELECT a.id, a.nom, a.prix_initial, p.url 
+        FROM articles a 
+        JOIN photos p ON a.id = p.article_id 
+        LIMIT 10";
+$result = mysqli_query($db, $sql);
+while ($data = mysqli_fetch_assoc($result)) {
+    $articles[] = $data;
+}
+mysqli_close($db);
 ?>
 
 <!DOCTYPE html>
@@ -268,8 +291,7 @@ mysqli_close($db_handle);
 
     <section>
       <br>
-      <p>Nous sommes le meilleur site de ventes vintage de toute la France. Vous pouvez vendre, acheter ou même devenir un de nos fournisseurs. Inscrivez-vous vite !!!</p>
-      
+      <p><?= htmlspecialchars($connect_msg) ?></p>      
       <!-- Carrousel -->
       <div id="carrousel">
         <ul>

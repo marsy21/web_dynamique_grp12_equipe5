@@ -3,6 +3,37 @@ $database = "agora_francia";
 $db_handle = mysqli_connect('localhost', 'root', '');
 $db_found = mysqli_select_db($db_handle, $database);
 ?>
+<?php
+session_start();
+include 'db.php';
+
+$connect_msg = "Nous sommes le meilleur site de ventes vintage de toute la France. Vous pouvez vendre, acheter ou même devenir un de nos fournisseurs. Inscrivez-vous vite !!!";
+
+$is_client = false;
+$is_vendeur = false;
+$pseudo_vendeur = null;
+
+if (isset($_SESSION['utilisateur'])) {
+    $id = $_SESSION['utilisateur']['id'];
+    $utilisateur = $_SESSION['utilisateur'];
+
+    $res_client = mysqli_query($db, "SELECT * FROM clients WHERE id = $id");
+    $is_client = mysqli_num_rows($res_client) > 0;
+
+    $res_vendeur = mysqli_query($db, "SELECT * FROM vendeurs WHERE id = $id");
+    $is_vendeur = mysqli_num_rows($res_vendeur) > 0;
+    $pseudo_vendeur = $is_vendeur ? mysqli_fetch_assoc($res_vendeur)['pseudo'] : null;
+
+    $connect_msg = "Connecté";
+    if ($is_client && $is_vendeur) {
+        $connect_msg = "Connecté Client et Vendeur $pseudo_vendeur";
+    } elseif ($is_client) {
+        $connect_msg = "Connecté Client";
+    } elseif ($is_vendeur) {
+        $connect_msg = "Connecté $pseudo_vendeur";
+    }
+}
+?>
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -146,7 +177,7 @@ $db_found = mysqli_select_db($db_handle, $database);
 		</nav>
 
 		<section>
-			<p>Nous sommes le meilleur site de ventes vintage de toute la France. Découvrez nos trésors !</p>
+			<p><?= htmlspecialchars($connect_msg) ?></p>      
 			<div style="text-align:center; margin: 20px;">
 				<button onclick="filtrerCategorie(0)">Toutes les catégories</button>
 				<button onclick="filtrerCategorie(1)">Meubles et objets d’art</button>
@@ -158,7 +189,7 @@ $db_found = mysqli_select_db($db_handle, $database);
 
 		<div class="articles-container">
 			<?php
-			if ($db_found) {
+			
 				$raretes = [
 					1 => 'Articles rares',
 					2 => 'Articles haut de gamme',
@@ -195,10 +226,8 @@ $db_found = mysqli_select_db($db_handle, $database);
 					}
 
           echo "</div>"; // fin articles-container
-      }
-  } else {
-  	echo "<p>Erreur de connexion à la base de données.</p>";
-  }
+      
+  } 
 
   mysqli_close($db_handle);
   ?>
