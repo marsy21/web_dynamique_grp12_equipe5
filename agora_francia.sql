@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS `articles` (
   `prix_initial` decimal(10,2) DEFAULT NULL,
   `categorie_id` int DEFAULT NULL,
   `rarete` int DEFAULT NULL,
-  `type_vente` enum('meilleure offre','négociation','immédiate') DEFAULT 'Vente immédiate',
+  `type_vente` enum('meilleure offre','négociation','immédiate') DEFAULT 'immédiate',
   `qualite` varchar(255) DEFAULT NULL,
   `defaut` varchar(255) DEFAULT NULL,
   `date_publication` datetime DEFAULT CURRENT_TIMESTAMP,
