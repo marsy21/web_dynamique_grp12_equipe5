@@ -317,6 +317,18 @@ CREATE TABLE IF NOT EXISTS `videos` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 COMMIT;
 
+DROP TABLE IF EXISTS `cartesreelles`;
+CREATE TABLE IF NOT EXISTS `cartesreelles` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `type_carte` enum('Visa','MasterCard','AmericanExpress','PayPal') DEFAULT NULL,
+  `numero_carte` varchar(20) DEFAULT NULL,
+  `nom_carte` varchar(100) DEFAULT NULL,
+  `expiration` date DEFAULT NULL,
+  `code_securite` varchar(4) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

@@ -3,7 +3,7 @@ session_start();
 include 'db.php';
 
 // Connexion utilisateur
-$connect_msg = "Nous sommes le meilleur site de ventes vintage de toute la France. [...]";
+$connect_msg = "Nous sommes le meilleur site de ventes vintage de toute la France.";
 $is_client = $is_vendeur = false;
 $pseudo_vendeur = null;
 

@@ -139,8 +139,17 @@ if ($result) {
                 <tbody>
                     <?php foreach ($articles[$type] as $art): ?>
                         <tr>
-                            <td><img src="Articles/Images/<?= htmlspecialchars($art['url'] ?? 'default.jpg') ?>" alt="<?= htmlspecialchars($art['nom']) ?>" /></td>
-                            <td><?= htmlspecialchars($art['nom']) ?></td>
+                            <td>
+                                <a href="monarticle.php?id=<?= intval($art['article_id']) ?>">
+                                    <img src="Articles/Images/<?= htmlspecialchars($art['url'] ?? 'default.jpg') ?>" alt="<?= htmlspecialchars($art['nom']) ?>" />
+                                </a>
+                            </td>
+                            <td>
+                                <a href="monarticle.php?id=<?= intval($art['article_id']) ?>" style="text-decoration: none; color: inherit;">
+                                    <?= htmlspecialchars($art['nom']) ?>
+                                </a>
+                            </td>
+
                             <td class="prix"><?= number_format($art['prix_initial'], 2, ',', '') ?> €</td>
                             <td>
                                 <?php if ($type === 'immediate'): ?>
