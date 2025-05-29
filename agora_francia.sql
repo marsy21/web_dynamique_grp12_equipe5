@@ -1,9 +1,9 @@
--- phpMyAdmin SQL Dumphhhhaaaaallllllll
+-- phpMyAdmin SQL Dump
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: May 26, 2025 at 08:29 AM
+-- Generation Time: May 29, 2025 at 07:05 PM
 -- Server version: 8.2.0
 -- PHP Version: 8.2.13
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `agora francia`
+-- Database: `agora_francia`
 --
 
 -- --------------------------------------------------------
@@ -40,7 +40,6 @@ CREATE TABLE IF NOT EXISTS `administrateurs` (
 --
 
 DROP TABLE IF EXISTS `articles`;
-
 CREATE TABLE IF NOT EXISTS `articles` (
   `id` int NOT NULL AUTO_INCREMENT,
   `id_vendeur` int NOT NULL,
@@ -49,16 +48,19 @@ CREATE TABLE IF NOT EXISTS `articles` (
   `prix_initial` decimal(10,2) DEFAULT NULL,
   `categorie_id` int DEFAULT NULL,
   `rarete` int DEFAULT NULL,
-  `type_vente` ENUM('Vente par meilleure offre', 'Vente par négociation', 'Vente immédiate') DEFAULT 'Vente immédiate',
+  `type_vente` enum('Vente par meilleure offre','Vente par négociation','Vente immédiate') DEFAULT 'Vente immédiate',
   `qualite` varchar(255) DEFAULT NULL,
   `defaut` varchar(255) DEFAULT NULL,
   `date_publication` datetime DEFAULT CURRENT_TIMESTAMP,
   `vendu` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `id_vendeur` (`id_vendeur`),
-  KEY `categorie_id` (`categorie_id`),
-  KEY `type_vente_id` (`type_vente_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `categorie_id` (`categorie_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `articles`
+--
 
 INSERT INTO `articles` (`id`, `id_vendeur`, `nom`, `description`, `prix_initial`, `categorie_id`, `rarete`, `type_vente`, `qualite`, `defaut`, `date_publication`, `vendu`) VALUES
 (1, 1, 'Appareil photo', 'Appareil photo ancien de collection', 120.00, 2, 2, 'Vente par négociation', 'Bonne', NULL, '2025-05-29 09:16:52', 0),
@@ -85,8 +87,6 @@ INSERT INTO `articles` (`id`, `id_vendeur`, `nom`, `description`, `prix_initial`
 (22, 1, 'Tableau 3', 'Portrait de Van Gogh', 195.00, 1, 1, 'Vente par négociation', 'Très bonne', NULL, '2025-05-29 09:16:52', 0),
 (23, 1, 'Table basse bois', 'Table basse en bois', 100.00, 1, 3, 'Vente par meilleure offre', 'Bonne', NULL, '2025-05-29 09:16:52', 0),
 (24, 1, 'Téléphone', 'Téléphone ancien en bakélite', 70.00, 2, 2, 'Vente par négociation', 'Fonctionnel', NULL, '2025-05-29 09:16:52', 0);
-
-
 
 -- --------------------------------------------------------
 
@@ -230,13 +230,10 @@ CREATE TABLE IF NOT EXISTS `panier` (
   `client_id` int DEFAULT NULL,
   `article_id` int DEFAULT NULL,
   `date_ajout` datetime DEFAULT CURRENT_TIMESTAMP,
-  `type_achat` enum('achat_immediat','negociation','enchere') DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `client_id` (`client_id`),
   KEY `article_id` (`article_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-
 
 -- --------------------------------------------------------
 
@@ -251,9 +248,13 @@ CREATE TABLE IF NOT EXISTS `photos` (
   `url` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `article_id` (`article_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-INSERT INTO photos (id, article_id, url) VALUES
+--
+-- Dumping data for table `photos`
+--
+
+INSERT INTO `photos` (`id`, `article_id`, `url`) VALUES
 (1, 1, 'appareil.png'),
 (2, 2, 'commodeblanche.png'),
 (3, 3, 'commodebois.png'),
@@ -278,20 +279,6 @@ INSERT INTO photos (id, article_id, url) VALUES
 (22, 22, 'tableau3.png'),
 (23, 23, 'tablebassebois.png'),
 (24, 24, 'telephone.png');
-COMMIT;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `types_vente`
---
-
-DROP TABLE IF EXISTS `types_vente`;
-CREATE TABLE IF NOT EXISTS `types_vente` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `nom` enum('achat_immediat','negociation','enchere') NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
