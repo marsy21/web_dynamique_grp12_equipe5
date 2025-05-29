@@ -79,9 +79,6 @@ if ($result) {
         background-color: orange;
         color: white;
     }
-        body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 20px; }
-        .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        h1 { margin-bottom: 20px; }
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 10px; border-bottom: 1px solid #ddd; text-align: center; }
         img { max-width: 80px; border-radius: 6px; }

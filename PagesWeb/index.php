@@ -2,15 +2,13 @@
 session_start();
 include 'db.php';
 
-$connect_msg = "Nous sommes le meilleur site de ventes vintage de toute la France. Vous pouvez vendre, acheter ou même devenir un de nos fournisseurs. Inscrivez-vous vite !!!";
-
-$is_client = false;
-$is_vendeur = false;
+// Connexion utilisateur
+$connect_msg = "Nous sommes le meilleur site de ventes vintage de toute la France. [...]";
+$is_client = $is_vendeur = false;
 $pseudo_vendeur = null;
 
 if (isset($_SESSION['utilisateur'])) {
     $id = $_SESSION['utilisateur']['id'];
-    $utilisateur = $_SESSION['utilisateur'];
 
     $res_client = mysqli_query($db, "SELECT * FROM clients WHERE id = $id");
     $is_client = mysqli_num_rows($res_client) > 0;
@@ -19,30 +17,37 @@ if (isset($_SESSION['utilisateur'])) {
     $is_vendeur = mysqli_num_rows($res_vendeur) > 0;
     $pseudo_vendeur = $is_vendeur ? mysqli_fetch_assoc($res_vendeur)['pseudo'] : null;
 
-    $connect_msg = "Connecté";
-    if ($is_client && $is_vendeur) {
-        $connect_msg = "Connecté Client et Vendeur $pseudo_vendeur";
-    } elseif ($is_client) {
-        $connect_msg = "Connecté Client";
-    } elseif ($is_vendeur) {
-        $connect_msg = "Connecté $pseudo_vendeur";
-    }
+    $connect_msg = $is_client && $is_vendeur ? "Connecté Client et Vendeur $pseudo_vendeur" : 
+                   ($is_client ? "Connecté Client" : "Connecté $pseudo_vendeur");
 }
 
-// Récupération des articles
-$articles = [];
-$sql = "SELECT a.id, a.nom, a.prix_initial, p.url 
-        FROM articles a 
-        JOIN photos p ON a.id = p.article_id 
-        WHERE a.id IN (21, 14, 22, 8, 5, 20, 9, 10, 11)
-        ORDER BY FIELD(a.id, 21, 14, 22, 8, 5, 20, 9, 10, 11)";
-        
-$result = mysqli_query($db, $sql);
-while ($data = mysqli_fetch_assoc($result)) {
-    $articles[] = $data;
+// Articles les plus récents pour le carrousel (9 derniers)
+$carrousel_articles = [];
+$sql_carrousel = "SELECT a.id, a.nom, a.prix_initial, p.url
+                  FROM articles a
+                  JOIN photos p ON a.id = p.article_id
+                  ORDER BY a.date_publication DESC
+                  LIMIT 9";
+$res1 = mysqli_query($db, $sql_carrousel);
+while ($row = mysqli_fetch_assoc($res1)) {
+    $carrousel_articles[] = $row;
+}
+
+// Articles en vente immédiate pour les ventes flash
+$ventes_flash = [];
+$sql_flash = "SELECT a.id, a.nom, a.prix_initial, p.url
+              FROM articles a
+              JOIN photos p ON a.id = p.article_id
+              WHERE a.type_vente = 'immediate'
+              ORDER BY a.date_publication DESC
+              LIMIT 9";
+$res2 = mysqli_query($db, $sql_flash);
+while ($row = mysqli_fetch_assoc($res2)) {
+    $ventes_flash[] = $row;
 }
 mysqli_close($db);
 ?>
+
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -222,38 +227,42 @@ mysqli_close($db);
     </nav>
 
     <section>
-      <br>
-      <p><?= htmlspecialchars($connect_msg) ?></p>      
-      <!-- Carrousel -->
-      <div id="carrousel">
-        <ul>
-          <?php foreach ($articles as $art): ?>
-            <li>
-              <a href="monarticle.php?id=<?= $art['id'] ?>">
-                <img src="Articles/Images/<?= htmlspecialchars($art['url']) ?>" alt="<?= htmlspecialchars($art['nom']) ?>">
-              </a>
-            </li>
-          <?php endforeach; ?>
-        </ul>
-      </div>
+  <br>
+  <p><?= htmlspecialchars($connect_msg) ?></p>
 
-      <div class="controls">
-        <button class="prev">⟨ Précédent</button>
-        <button class="next">Suivant ⟩</button>
-      </div>
+  <!-- Nouveautés -->
+  <h2>Nouveauté :</h2>
+  <div id="carrousel">
+    <ul>
+      <?php foreach ($carrousel_articles as $art): ?>
+        <li>
+          <a href="monarticle.php?id=<?= $art['id'] ?>">
+            <img src="Articles/Images/<?= htmlspecialchars($art['url']) ?>" alt="<?= htmlspecialchars($art['nom']) ?>">
+          </a>
+        </li>
+      <?php endforeach; ?>
+    </ul>
+  </div>
 
-      <h2>Ventes flash</h2>
-      <div class="ventes-flash-ligne">
-        <?php foreach ($articles as $art): ?>
-          <div class="article">
-            <a href="monarticle.php?id=<?= $art['id'] ?>">
-              <img src="Articles/Images/<?= htmlspecialchars($art['url']) ?>" alt="<?= htmlspecialchars($art['nom']) ?>">
-            </a>
-            <span><?= number_format($art['prix_initial'], 2, ',', '') ?>€</span>
-          </div>
-        <?php endforeach; ?>
+  <div class="controls">
+    <button class="prev">⟨ Précédent</button>
+    <button class="next">Suivant ⟩</button>
+  </div>
+
+  <!-- Ventes flash -->
+  <h2>Ventes flash</h2>
+  <div class="ventes-flash-ligne">
+    <?php foreach ($ventes_flash as $art): ?>
+      <div class="article">
+        <a href="monarticle.php?id=<?= $art['id'] ?>">
+          <img src="Articles/Images/<?= htmlspecialchars($art['url']) ?>" alt="<?= htmlspecialchars($art['nom']) ?>">
+        </a>
+        <span><?= number_format($art['prix_initial'], 2, ',', '') ?>€</span>
       </div>
-    </section>
+    <?php endforeach; ?>
+  </div>
+</section>
+
 
     <footer>
       <div class="footer-content">
