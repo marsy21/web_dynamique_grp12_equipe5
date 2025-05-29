@@ -33,7 +33,7 @@ if (isset($_GET['supprimer'])) {
 
 // Récupérer tous les articles dans le panier du client avec détails
 $sql = "
-    SELECT p.article_id, a.nom, a.prix_initial, ph.url
+    SELECT p.article_id, a.nom, a.prix_initial, a.type_vente, ph.url
     FROM panier p
     JOIN articles a ON p.article_id = a.id
     LEFT JOIN photos ph ON a.id = ph.article_id
@@ -41,17 +41,29 @@ $sql = "
     GROUP BY p.article_id
 ";
 
+
 $result = mysqli_query($db, $sql);
 
-$articles = [];
+$articles = [
+    'immediate' => [],
+    'meilleure offre' => [],
+    'negociation' => []
+];
+
 $total = 0;
 
 if ($result) {
     while ($row = mysqli_fetch_assoc($result)) {
-        $articles[] = $row;
-        $total += $row['prix_initial'];
+        $type = strtolower($row['type_vente']);
+        if (!isset($articles[$type])) $articles[$type] = [];
+        $articles[$type][] = $row;
+
+        if ($type === 'immediate') {
+            $total += $row['prix_initial'];
+        }
     }
 }
+
 
 ?>
 
@@ -109,39 +121,57 @@ if ($result) {
     <section>
     <div class="container">
     <h1>Mon Panier</h1>
+<?php if (array_sum(array_map('count', $articles)) === 0): ?>
+    <p>Votre panier est vide.</p>
+    <a href="toutparcourir.php">← Retour aux articles</a>
+<?php else: ?>
 
-    <?php if (count($articles) === 0): ?>
-        <p>Votre panier est vide.</p>
-        <a href="toutparcourir.php">← Retour aux articles</a>
-    <?php else: ?>
-        <table>
-            <thead>
-                <tr>
-                    <th>Image</th>
-                    <th>Nom de l'article</th>
-                    <th>Prix</th>
-                    <th>Supprimer</th>
-                </tr>
-            </thead>
-            <tbody>
-            <?php foreach ($articles as $art): ?>
-                <tr>
-                    <td><img src="Articles/Images/<?= htmlspecialchars($art['url'] ?? 'default.jpg') ?>" alt="<?= htmlspecialchars($art['nom']) ?>" /></td>
-                    <td><?= htmlspecialchars($art['nom']) ?></td>
-                    <td class="prix"><?= number_format($art['prix_initial'], 2, ',', '') ?> €</td>
-                    <td><a class="supprimer" href="panier.php?supprimer=<?= intval($art['article_id']) ?>" onclick="return confirm('Supprimer cet article du panier ?');">X</a></td>
-                </tr>
-            <?php endforeach; ?>
-            </tbody>
-        </table>
+    <?php foreach (['immediate' => 'Achat Immédiat', 'meilleure offre' => 'Meilleure Offre', 'negociation' => 'Négociation'] as $type => $label): ?>
+        <?php if (!empty($articles[$type])): ?>
+            <h2><?= $label ?></h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Nom</th>
+                        <th>Prix</th>
+                        <th>Action</th>
+                        <th>Supprimer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($articles[$type] as $art): ?>
+                        <tr>
+                            <td><img src="Articles/Images/<?= htmlspecialchars($art['url'] ?? 'default.jpg') ?>" alt="<?= htmlspecialchars($art['nom']) ?>" /></td>
+                            <td><?= htmlspecialchars($art['nom']) ?></td>
+                            <td class="prix"><?= number_format($art['prix_initial'], 2, ',', '') ?> €</td>
+                            <td>
+                                <?php if ($type === 'immediate'): ?>
+                                    <a href="paiement.php" class="btn-payer">Procéder au paiement</a>
+                                <?php elseif ($type === 'meilleure offre'): ?>
+                                    <a href="encherir.php?id=<?= $art['article_id'] ?>" class="btn-payer">Enchérir</a>
+                                <?php elseif ($type === 'negociation'): ?>
+                                    <a href="negocier.php?id=<?= $art['article_id'] ?>" class="btn-payer">Négocier</a>
+                                <?php endif; ?>
+                            </td>
+                            <td><a class="supprimer" href="panier.php?supprimer=<?= intval($art['article_id']) ?>" onclick="return confirm('Supprimer cet article ?');">X</a></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        <?php endif; ?>
+    <?php endforeach; ?>
 
-        <div class="total"><strong>Total : <?= number_format($total, 2, ',', '') ?> €</strong></div>
-
-        <a href="paiement.php" class="btn-payer">Passer au paiement</a>
-        <br><br>
-        <a href="toutparcourir.php">← Continuer vos achats</a>
+    <?php if (!empty($articles['immediate'])): ?>
+        <div class="total"><strong>Total immédiat : <?= number_format($total, 2, ',', '') ?> €</strong></div>
+        <a href="paiement.php" class="btn-payer">Procéder au paiement total immediat</a>
     <?php endif; ?>
-</div>
+
+    <br><br>
+    <a href="toutparcourir.php">← Continuer vos achats</a>
+<?php endif; ?>
+
+   
 
     </section>
 
