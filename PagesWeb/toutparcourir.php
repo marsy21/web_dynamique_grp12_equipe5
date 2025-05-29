@@ -103,15 +103,34 @@ if (isset($_SESSION['utilisateur'])) {
 		</nav>
 
 		<section>
-			<p><?= htmlspecialchars($connect_msg) ?></p>      
+			<p><?= htmlspecialchars($connect_msg) ?></p>
 			<div style="text-align:center; margin: 20px;">
-				<button onclick="filtrerCategorie(0)">Toutes les catégories</button>
-				<button onclick="filtrerCategorie(1)">Meubles et objets d’art</button>
-				<button onclick="filtrerCategorie(2)">Accessoire VIP</button>
-				<button onclick="filtrerCategorie(3)">Matériels scolaires</button>
-			</div>
+				<label for="rarete">Rareté :</label>
+				<select id="rarete" onchange="filtrerArticles()">
+					<option value="0">Toutes</option>
+					<option value="1">Rares</option>
+					<option value="2">Haut de gamme</option>
+					<option value="3">Réguliers</option>
+				</select>
 
+				<label for="categorie">Catégorie :</label>
+				<select id="categorie" onchange="filtrerArticles()">
+					<option value="0">Toutes</option>
+					<option value="1">Meubles et objets d’art</option>
+					<option value="2">Accessoire VIP</option>
+					<option value="3">Matériels scolaires</option>
+				</select>
+
+				<label for="type_vente">Type de vente :</label>
+				<select id="type_vente" onchange="filtrerArticles()">
+					<option value="">Tous</option>
+					<option value="enchere">Enchère</option>
+					<option value="negociation">Négociation</option>
+					<option value="immediat">Achat immédiat</option>
+				</select>
+			</div>
 		</section>
+
 
 		<div class="articles-container">
 			<?php
@@ -127,10 +146,10 @@ if (isset($_SESSION['utilisateur'])) {
 					echo "<div class='articles-container'>";
 
 					$sql = "
-					SELECT a.id, a.nom, a.prix_initial, a.categorie_id, p.url 
+					SELECT a.id, a.nom, a.prix_initial, a.categorie_id, a.rarete, a.type_vente, p.url
 					FROM articles a
 					LEFT JOIN photos p ON a.id = p.article_id
-					WHERE a.rarete = $rarete AND a.vendu = 0
+					WHERE a.vendu = 0
 
 					";
 
@@ -142,6 +161,8 @@ if (isset($_SESSION['utilisateur'])) {
 						$prix = number_format($data['prix_initial'], 2, ',', '') . "€";
 						$img_path = "Articles/Images/" . htmlspecialchars($data['url']);
 						$categorie_id = $data['categorie_id'];
+						$type_vente = htmlspecialchars($data['type_vente']); // à ajouter dans la SELECT si pas encore
+						$rarete_val = $rarete;
 
 						echo "<a href='monarticle.php?id=$id' class='article-card' data-categorie='$categorie_id'>";
 						echo "<img src='$img_path' alt='" . htmlspecialchars($nom) . "' />";
@@ -175,19 +196,27 @@ if (isset($_SESSION['utilisateur'])) {
 </footer>
 </div>
 <script>
-	function filtrerCategorie(catId) {
+	function filtrerArticles() {
+		const rarete = parseInt(document.getElementById('rarete').value);
+		const categorie = parseInt(document.getElementById('categorie').value);
+		const typeVente = document.getElementById('type_vente').value;
+
 		const cards = document.querySelectorAll('.article-card');
 
 		cards.forEach(card => {
-			const cat = parseInt(card.getAttribute('data-categorie'));
-			if (catId === 0 || cat === catId) {
-				card.style.display = 'inline-block';
-			} else {
-				card.style.display = 'none';
-			}
+			const r = parseInt(card.getAttribute('data-rarete'));
+			const c = parseInt(card.getAttribute('data-categorie'));
+			const t = card.getAttribute('data-type');
+
+			const matchRarete = rarete === 0 || r === rarete;
+			const matchCategorie = categorie === 0 || c === categorie;
+			const matchType = typeVente === "" || t === typeVente;
+
+			card.style.display = (matchRarete && matchCategorie && matchType) ? 'inline-block' : 'none';
 		});
 	}
 </script>
+
 
 </body>
 </html>

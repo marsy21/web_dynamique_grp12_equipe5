@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS `articles` (
   `prix_initial` decimal(10,2) DEFAULT NULL,
   `categorie_id` int DEFAULT NULL,
   `rarete` int DEFAULT NULL,
-  `type_vente` enum('Vente par meilleure offre','Vente par négociation','Vente immédiate') DEFAULT 'Vente immédiate',
+  `type_vente` enum('meilleure offre','négociation','immédiate') DEFAULT 'Vente immédiate',
   `qualite` varchar(255) DEFAULT NULL,
   `defaut` varchar(255) DEFAULT NULL,
   `date_publication` datetime DEFAULT CURRENT_TIMESTAMP,
@@ -61,32 +61,32 @@ CREATE TABLE IF NOT EXISTS `articles` (
 --
 -- Dumping data for table `articles`
 --
-
 INSERT INTO `articles` (`id`, `id_vendeur`, `nom`, `description`, `prix_initial`, `categorie_id`, `rarete`, `type_vente`, `qualite`, `defaut`, `date_publication`, `vendu`) VALUES
-(1, 1, 'Appareil photo', 'Appareil photo ancien de collection', 120.00, 2, 2, 'Vente par négociation', 'Bonne', NULL, '2025-05-29 09:16:52', 0),
-(2, 1, 'Commode blanche', 'Commode blanche style vintage', 150.00, 1, 3, 'Vente par meilleure offre', 'Très bonne', NULL, '2025-05-29 09:16:52', 0),
-(3, 1, 'Commode bois', 'Commode en bois massif', 160.00, 1, 3, 'Vente immédiate', 'Bonne', NULL, '2025-05-29 09:16:52', 0),
-(4, 1, 'Commode verte', 'Commode verte originale', 145.00, 1, 3, 'Vente par négociation', 'Très bonne', NULL, '2025-05-29 09:16:52', 0),
-(5, 1, 'Disque vinyle', 'Tourne-disque rétro', 80.00, 2, 2, 'Vente par meilleure offre', 'Fonctionnelle', NULL, '2025-05-29 09:16:52', 0),
-(6, 1, 'Fauteuil blanc', 'Fauteuil blanc chic et confortable', 95.00, 1, 3, 'Vente par négociation', 'Neuf', NULL, '2025-05-29 09:16:52', 0),
-(7, 1, 'Machine à écrire', 'Machine à écrire vintage', 110.00, 2, 2, 'Vente immédiate', 'Fonctionnelle', NULL, '2025-05-29 09:16:52', 0),
-(8, 1, 'Machine à coudre', 'Machine à coudre ancienne', 130.00, 1, 2, 'Vente par meilleure offre', 'Fonctionnelle', NULL, '2025-05-29 09:16:52', 0),
-(9, 1, 'Micro', 'Microphone ancien', 75.00, 2, 2, 'Vente par négociation', 'Correcte', NULL, '2025-05-29 09:16:52', 0),
-(10, 1, 'Montre cuir', 'Montre à bracelet cuir', 60.00, 2, 1, 'Vente immédiate', 'Bonne', NULL, '2025-05-29 09:16:52', 0),
-(11, 1, 'Montre or', 'Montre à bracelet doré', 85.00, 2, 1, 'Vente par meilleure offre', 'Très bonne', NULL, '2025-05-29 09:16:52', 0),
-(12, 1, 'Montre bleue', 'Montre moderne bleue', 55.00, 2, 1, 'Vente par négociation', 'Neuf', NULL, '2025-05-29 09:16:52', 0),
-(13, 1, 'Peinture 1', 'Peinture ancienne encadrée', 200.00, 1, 1, 'Vente immédiate', 'Bonne', NULL, '2025-05-29 09:16:52', 0),
-(14, 1, 'Peinture 2', 'Peinture paysage ancienne', 210.00, 1, 1, 'Vente par meilleure offre', 'Très bonne', NULL, '2025-05-29 09:16:52', 0),
-(15, 1, 'Peinture 3', 'Peinture bord de lac', 220.00, 1, 1, 'Vente immédiate', 'Très bonne', NULL, '2025-05-29 09:16:52', 0),
-(16, 1, 'Pièce ancienne 1', 'Pièce de monnaie ancienne', 300.00, 2, 1, 'Vente par négociation', 'Bonne', NULL, '2025-05-29 09:16:52', 0),
-(17, 1, 'Pièce ancienne 2', 'Pièce rare de collection', 310.00, 2, 1, 'Vente immédiate', 'Bonne', NULL, '2025-05-29 09:16:52', 0),
-(18, 1, 'Pièce ancienne 3', 'Pièce historique', 320.00, 2, 1, 'Vente par meilleure offre', 'Très bonne', NULL, '2025-05-29 09:16:52', 0),
-(19, 1, 'Radio ancienne', 'Radio vintage fonctionnelle', 90.00, 2, 2, 'Vente immédiate', 'Fonctionnelle', NULL, '2025-05-29 09:16:52', 0),
-(20, 1, 'Tableau 1', 'Tableau coloré bord de mer', 180.00, 1, 1, 'Vente par négociation', 'Bonne', NULL, '2025-05-29 09:16:52', 0),
-(21, 1, 'Tableau 2', 'La nuit étoilée reproduction', 190.00, 1, 1, 'Vente immédiate', 'Très bonne', NULL, '2025-05-29 09:16:52', 0),
-(22, 1, 'Tableau 3', 'Portrait de Van Gogh', 195.00, 1, 1, 'Vente par négociation', 'Très bonne', NULL, '2025-05-29 09:16:52', 0),
-(23, 1, 'Table basse bois', 'Table basse en bois', 100.00, 1, 3, 'Vente par meilleure offre', 'Bonne', NULL, '2025-05-29 09:16:52', 0),
-(24, 1, 'Téléphone', 'Téléphone ancien en bakélite', 70.00, 2, 2, 'Vente par négociation', 'Fonctionnel', NULL, '2025-05-29 09:16:52', 0);
+(1, 1, 'Appareil photo', 'Appareil photo ancien de collection', 120.00, 2, 2, 'négociation', 'Bonne', NULL, '2025-05-29 09:16:52', 0),
+(2, 1, 'Commode blanche', 'Commode blanche style vintage', 150.00, 1, 3, 'meilleure offre', 'Très bonne', NULL, '2025-05-29 09:16:52', 0),
+(3, 1, 'Commode bois', 'Commode en bois massif', 160.00, 1, 3, 'immédiate', 'Bonne', NULL, '2025-05-29 09:16:52', 0),
+(4, 1, 'Commode verte', 'Commode verte originale', 145.00, 1, 3, 'négociation', 'Très bonne', NULL, '2025-05-29 09:16:52', 0),
+(5, 1, 'Disque vinyle', 'Tourne-disque rétro', 80.00, 2, 2, 'meilleure offre', 'Fonctionnelle', NULL, '2025-05-29 09:16:52', 0),
+(6, 1, 'Fauteuil blanc', 'Fauteuil blanc chic et confortable', 95.00, 1, 3, 'négociation', 'Neuf', NULL, '2025-05-29 09:16:52', 0),
+(7, 1, 'Machine à écrire', 'Machine à écrire vintage', 110.00, 2, 2, 'immédiate', 'Fonctionnelle', NULL, '2025-05-29 09:16:52', 0),
+(8, 1, 'Machine à coudre', 'Machine à coudre ancienne', 130.00, 1, 2, 'meilleure offre', 'Fonctionnelle', NULL, '2025-05-29 09:16:52', 0),
+(9, 1, 'Micro', 'Microphone ancien', 75.00, 2, 2, 'négociation', 'Correcte', NULL, '2025-05-29 09:16:52', 0),
+(10, 1, 'Montre cuir', 'Montre à bracelet cuir', 60.00, 2, 1, 'immédiate', 'Bonne', NULL, '2025-05-29 09:16:52', 0),
+(11, 1, 'Montre or', 'Montre à bracelet doré', 85.00, 2, 1, 'meilleure offre', 'Très bonne', NULL, '2025-05-29 09:16:52', 0),
+(12, 1, 'Montre bleue', 'Montre moderne bleue', 55.00, 2, 1, 'négociation', 'Neuf', NULL, '2025-05-29 09:16:52', 0),
+(13, 1, 'Peinture 1', 'Peinture ancienne encadrée', 200.00, 1, 1, 'immédiate', 'Bonne', NULL, '2025-05-29 09:16:52', 0),
+(14, 1, 'Peinture 2', 'Peinture paysage ancienne', 210.00, 1, 1, 'meilleure offre', 'Très bonne', NULL, '2025-05-29 09:16:52', 0),
+(15, 1, 'Peinture 3', 'Peinture bord de lac', 220.00, 1, 1, 'immédiate', 'Très bonne', NULL, '2025-05-29 09:16:52', 0),
+(16, 1, 'Pièce ancienne 1', 'Pièce de monnaie ancienne', 300.00, 2, 1, 'négociation', 'Bonne', NULL, '2025-05-29 09:16:52', 0),
+(17, 1, 'Pièce ancienne 2', 'Pièce rare de collection', 310.00, 2, 1, 'immédiate', 'Bonne', NULL, '2025-05-29 09:16:52', 0),
+(18, 1, 'Pièce ancienne 3', 'Pièce historique', 320.00, 2, 1, 'meilleure offre', 'Très bonne', NULL, '2025-05-29 09:16:52', 0),
+(19, 1, 'Radio ancienne', 'Radio vintage fonctionnelle', 90.00, 2, 2, 'immédiate', 'Fonctionnelle', NULL, '2025-05-29 09:16:52', 0),
+(20, 1, 'Tableau 1', 'Tableau coloré bord de mer', 180.00, 1, 1, 'négociation', 'Bonne', NULL, '2025-05-29 09:16:52', 0),
+(21, 1, 'Tableau 2', 'La nuit étoilée reproduction', 190.00, 1, 1, 'immédiate', 'Très bonne', NULL, '2025-05-29 09:16:52', 0),
+(22, 1, 'Tableau 3', 'Portrait de Van Gogh', 195.00, 1, 1, 'négociation', 'Très bonne', NULL, '2025-05-29 09:16:52', 0),
+(23, 1, 'Table basse bois', 'Table basse en bois', 100.00, 1, 3, 'meilleure offre', 'Bonne', NULL, '2025-05-29 09:16:52', 0),
+(24, 1, 'Téléphone', 'Téléphone ancien en bakélite', 70.00, 2, 2, 'négociation', 'Fonctionnel', NULL, '2025-05-29 09:16:52', 0);
+
 
 -- --------------------------------------------------------
 
