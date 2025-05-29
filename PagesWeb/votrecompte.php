@@ -42,6 +42,8 @@ $is_vendeur = mysqli_num_rows($res_vendeur) > 0;
 $vendeur_info = $is_vendeur ? mysqli_fetch_assoc($res_vendeur) : null;
 ?>
 
+<link rel="stylesheet" href="style.css">
+
 <h1>Bienvenue <?= htmlspecialchars($utilisateur['prenom']) ?> <?= htmlspecialchars($utilisateur['nom']) ?></h1>
 <p>Email : <?= htmlspecialchars($utilisateur['email']) ?></p>
 <p>Date de création : <?= htmlspecialchars($utilisateur['date_creation']) ?></p>
