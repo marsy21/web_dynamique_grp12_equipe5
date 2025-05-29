@@ -237,6 +237,22 @@ CREATE TABLE IF NOT EXISTS `panier` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `photos`
+--
+
+DROP TABLE IF EXISTS `photos`;
+CREATE TABLE IF NOT EXISTS `photos` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `article_id` int DEFAULT NULL,
+  `url` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `article_id` (`article_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 INSERT INTO photos (id, article_id, url) VALUES
 (1, 1, 'appareil.png'),
 (2, 2, 'commodeblanche.png'),
@@ -263,20 +279,6 @@ INSERT INTO photos (id, article_id, url) VALUES
 (23, 23, 'tablebassebois.png'),
 (24, 24, 'telephone.png');
 COMMIT;
--- --------------------------------------------------------
-
---
--- Table structure for table `photos`
---
-
-DROP TABLE IF EXISTS `photos`;
-CREATE TABLE IF NOT EXISTS `photos` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `article_id` int DEFAULT NULL,
-  `url` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `article_id` (`article_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
