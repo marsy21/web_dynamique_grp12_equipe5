@@ -34,7 +34,9 @@ $articles = [];
 $sql = "SELECT a.id, a.nom, a.prix_initial, p.url 
         FROM articles a 
         JOIN photos p ON a.id = p.article_id 
-        LIMIT 10";
+        WHERE a.id IN (21, 14, 22, 8, 5, 20, 9, 10, 11)
+        ORDER BY FIELD(a.id, 21, 14, 22, 8, 5, 20, 9, 10, 11)";
+        
 $result = mysqli_query($db, $sql);
 while ($data = mysqli_fetch_assoc($result)) {
     $articles[] = $data;
