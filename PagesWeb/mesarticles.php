@@ -80,17 +80,10 @@ if ($result) {
             font-weight: bold;
             display: inline-block;
         }
+        a.supprimer { color: red; text-decoration: none; font-weight: bold; }
+
         
-        .ajouter-btn {
-            margin-top: 25px;
-            display: inline-block;
-            padding: 12px 24px;
-            background-color: darkgreen;
-            color: white;
-            font-weight: bold;
-            border-radius: 8px;
-            text-decoration: none;
-        }
+    
     </style>
 </head>
 <body>
@@ -159,7 +152,7 @@ if ($result) {
             <?php endforeach; ?>
         <?php endif; ?>
 
-        <a href="#" class="ajouter-btn">➕ Ajouter un article</a>
+        <a href="ajouter_article.php" >➕ Ajouter un article</a>
 
     </section>
 

@@ -117,7 +117,6 @@ if ($result) {
         .prix { color: purple; font-weight: bold; }
         .total { text-align: right; font-size: 1.3em; margin-top: 15px; }
         a.supprimer { color: red; text-decoration: none; font-weight: bold; }
-        a.supprimer:hover { text-decoration: underline; }
         .btn-payer {
             margin-top: 20px;
             background-color: brown;

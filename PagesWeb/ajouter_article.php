@@ -19,7 +19,7 @@ $message = "";
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nom = mysqli_real_escape_string($db, $_POST['nom'] ?? '');
     $description = mysqli_real_escape_string($db, $_POST['description'] ?? '');
-    $prix_initial = floatval($_POST['prix_initial'] ?? 0);
+    $prix = floatval($_POST['prix'] ?? 0);
     $type_vente = mysqli_real_escape_string($db, $_POST['type_vente'] ?? '');
 
     // Téléversement image (simplifié)
@@ -34,8 +34,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Insertion dans la base
-    $query = "INSERT INTO articles (nom, description, prix_initial, type_vente, id_vendeur) 
-              VALUES ('$nom', '$description', $prix_initial, '$type_vente', $id_utilisateur)";
+    $query = "INSERT INTO articles (nom, description, prix, type_vente, id_vendeur, image_url) 
+              VALUES ('$nom', '$description', $prix, '$type_vente', $id_utilisateur, '$image_url')";
     if (mysqli_query($db, $query)) {
         $message = "Article ajouté avec succès.";
     } else {
@@ -43,40 +43,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Ajouter un article</title>
+    <meta charset="UTF-8" />
+    <title>Ajouter un Article - Agora Francia</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        nav a[href="ajouter_article.php"] { background-color: orange; color: white; }
+        form { max-width: 600px; margin: 20px auto; }
+        label { display: block; margin-top: 15px; font-weight: bold; }
+        input[type="text"], input[type="number"], textarea, select {
+            width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid #ccc;
+        }
+        button { margin-top: 20px; background-color: brown; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; }
+        .error { color: red; }
+        .success { color: green; font-weight: bold; }
+    </style>
 </head>
 <body>
-    <div class="wrapper">
-        <header>
-            <h1>Ajouter un article</h1>
-        </header>
+<div class="wrapper">
+    <header>
+        <h1>Agora Francia</h1>
+        <img src="Articles/Images/logo.png" alt="Logo Agora">
+    </header>
 
-        <nav>
-            <a href="index.php">Accueil</a>
-            <a href="toutparcourir.php">Tout Parcourir</a>
-            <a href="votrecompte.php">Votre Compte</a>
-        </nav>
+    <nav>
+        <a href="index.php">Accueil</a>
+        <a href="toutparcourir.php">Tout Parcourir</a>
+        <a href="#">Notifications</a>
+        <a href="panier.php">Panier</a>
+        <a href="votrecompte.php">Votre Compte</a>
+        <a href="mesarticles.php">Mes Articles</a>
+        <a href="ajouter_article.php">Ajouter un article</a>
+    </nav>
 
-        <section>
-            <?php if ($message): ?>
+    <section>
+        <h1>Ajouter un Article</h1>
+        
+         <?php if ($message): ?>
                 <p style="color:green;"><?= htmlspecialchars($message) ?></p>
             <?php endif; ?>
 
             <form method="post" enctype="multipart/form-data">
                 <label>Nom : <input type="text" name="nom" required></label><br><br>
                 <label>Description :<br><textarea name="description" rows="5" cols="40" required></textarea></label><br><br>
-                <label>Prix initial (€) : <input type="number" name="prix_initial" step="0.01" required></label><br><br>
+                <label>Prix (€) : <input type="number" name="prix" step="0.01" required></label><br><br>
                 <label>Type de vente :
                     <select name="type_vente" required>
                         <option value="immediate">Achat immédiat</option>
                         <option value="negociation">Négociation</option>
-                        <option value="meilleure offre">Meilleure offre</option>
+                        <option value="enchere">Enchère</option>
                     </select>
                 </label><br><br>
                 <label>Image : <input type="file" name="image" accept="image/*"></label><br><br>
@@ -84,7 +101,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </form>
 
             <br><a href="votrecompte.php">⬅ Retour à votre compte</a>
-        </section>
-    </div>
+      
+
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-left">
+                <p>📍 Agora Francia</p>
+                <p>12 rue de Victor Hugo, 75015 Paris</p>
+                <p>📞 01 23 45 67 89</p>
+                <p>📧 contact@agorafrancia.fr</p>
+            </div>
+            <div class="footer-right">
+                <img src="Articles/Images/logo.png" alt="Logo Agora">
+            </div>
+        </div>
+    </footer>
+</div>
 </body>
 </html>
+
+
+
+
+   
