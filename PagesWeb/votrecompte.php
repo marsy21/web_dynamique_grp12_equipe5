@@ -1,5 +1,9 @@
 <?php 
 session_start();
+
+
+$redirect = $_GET['redirect'] ?? null;
+
 if (!isset($_SESSION['utilisateur'])) {
     header("Location: connexion.php");
     exit;
@@ -45,6 +49,16 @@ $vendeur_info = $is_vendeur ? mysqli_fetch_assoc($res_vendeur) : null;
   <title>Votre Compte</title>
   <link rel="stylesheet" href="style.css">
   <style>
+    .messageredirect {
+
+  
+    background: linear-gradient(45deg,rgb(234, 255, 0),rgb(77, 255, 160));
+    font-weight: bold;
+    border-radius: 12px;
+
+    }
+
+
     li { list-style-type: none; }
     nav a[href="votrecompte.php"] {
       background-color: orange;
@@ -104,9 +118,14 @@ $vendeur_info = $is_vendeur ? mysqli_fetch_assoc($res_vendeur) : null;
             <a href="panier.php"><button>🛒 Mon panier</button></a>
           <?php endif; ?>
         </div>
-      <?php else: ?>
-        <p>Souhaitez-vous acheter ? <a href="devenirclient.php">Devenir Client</a></p>
-      <?php endif; ?>
+    <?php else: ?>
+  <?php if ($redirect === 'panier'): ?>
+    <p class="messageredirect">Souhaitez-vous acheter ? <a href="devenirclient.php">Devenir Client</a></p>
+  <?php else: ?>
+    <p>Souhaitez-vous acheter ? <a href="devenirclient.php">Devenir Client</a></p>
+  <?php endif; ?>
+<?php endif; ?>
+
 
       <?php if ($is_vendeur): ?>
         <div class="bloc-vendeur">
@@ -126,8 +145,14 @@ $vendeur_info = $is_vendeur ? mysqli_fetch_assoc($res_vendeur) : null;
           <?php endif; ?>
         </div>
       <?php else: ?>
-        <p><br>Souhaitez-vous vendre ? <a href="devenirvendeur.php">Devenir Vendeur</a></p>
-      <?php endif; ?>
+  <?php if ($redirect === 'mesarticles'): ?>
+    <p class="messageredirect"><br>Souhaitez-vous vendre ? <a href="devenirvendeur.php">Devenir Vendeur</a></p>
+</p>
+  <?php else: ?>
+    <p><br>Souhaitez-vous vendre ? <a href="devenirvendeur.php">Devenir Vendeur</a></p>
+  <?php endif; ?>
+<?php endif; ?>
+
 
       <br><br>
       <form method="post" action="logout.php">

@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 include 'db.php';
 
@@ -6,13 +7,24 @@ if (!isset($_SESSION['utilisateur']['id'])) {
     header('Location: connexion.php');
     exit;
 }
-if ($_SESSION['utilisateur']['role'] !== 'vendeur') {
-    // Connecté mais pas vendeur
-    header('Location: votrecompte.php'); // ou une autre page
+
+$idUtilisateur = intval($_SESSION['utilisateur']['id']);
+
+// Vérifie s'il est dans la table vendeurs
+$stmt = mysqli_prepare($db, "SELECT id FROM vendeurs WHERE id = ?");
+mysqli_stmt_bind_param($stmt, 'i', $idUtilisateur);
+mysqli_stmt_execute($stmt);
+mysqli_stmt_bind_result($stmt, $estVendeur);
+mysqli_stmt_fetch($stmt);
+mysqli_stmt_close($stmt);
+
+if (!$estVendeur) {
+    // Pas vendeur, donc redirection
+    header('Location: votrecompte.php?redirect=mesarticles');
     exit;
 }
 
-$id_vendeur = intval($_SESSION['utilisateur']['id']);
+$id_vendeur = $idUtilisateur;
 
 if (isset($_GET['supprimer'])) {
     $article_id = intval($_GET['supprimer']);
