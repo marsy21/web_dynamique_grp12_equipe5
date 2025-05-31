@@ -98,6 +98,7 @@ if (isset($_SESSION['utilisateur'])) {
         <a href="#">Notifications</a>
         <a href="panier.php">Panier</a>
         <a href="votrecompte.php">Votre Compte</a>
+        <a href="mesarticles.php">Mes Articles</a>
     </nav>
 
     <section>

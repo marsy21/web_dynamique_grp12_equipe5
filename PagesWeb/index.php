@@ -219,11 +219,12 @@ mysqli_close($db);
     </header>
 
     <nav>
-      <a href="index.php">Accueil</a>
-      <a href="toutparcourir.php">Tout Parcourir</a>
-      <a href="#">Notifications</a>
-      <a href="panier.php">Panier</a>
-      <a href="votrecompte.php">Votre Compte</a>
+        <a href="index.php">Accueil</a>
+        <a href="toutparcourir.php">Tout Parcourir</a>
+        <a href="#">Notifications</a>
+        <a href="panier.php">Panier</a>
+        <a href="votrecompte.php">Votre Compte</a>
+        <a href="mesarticles.php">Mes Articles</a>
     </nav>
 
     <section>

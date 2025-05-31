@@ -7,6 +7,11 @@ if (!isset($_SESSION['utilisateur']['id'])) {
     header('Location: votrecompte.php');
     exit;
 }
+if ($_SESSION['utilisateur']['role'] !== 'client') {
+    // Connecte mais pas client
+    header('Location: votrecompte.php'); 
+    exit;
+}
 
 $client_id = intval($_SESSION['utilisateur']['id']);
 if (isset($_GET['id'])) {
@@ -108,11 +113,12 @@ if ($result) {
     </header>
 
     <nav>
-      <a href="index.php">Accueil</a>
-      <a href="toutparcourir.php">Tout Parcourir</a>
-      <a href="#">Notifications</a>
-      <a href="panier.php">Panier</a>
-      <a href="votrecompte.php">Votre Compte</a>
+        <a href="index.php">Accueil</a>
+        <a href="toutparcourir.php">Tout Parcourir</a>
+        <a href="#">Notifications</a>
+        <a href="panier.php">Panier</a>
+        <a href="votrecompte.php">Votre Compte</a>
+        <a href="mesarticles.php">Mes Articles</a>
     </nav>
 
     <section>
