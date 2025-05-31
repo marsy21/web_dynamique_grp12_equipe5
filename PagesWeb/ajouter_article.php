@@ -1,48 +1,74 @@
 <?php
 session_start();
-if (!isset($_SESSION['utilisateur'])) {
-    header("Location: connexion.php");
-    exit;
-}
-
 include 'db.php';
-$id_utilisateur = $_SESSION['utilisateur']['id'];
 
-// Vérifie que l'utilisateur est bien un vendeur
-$res_vendeur = mysqli_query($db, "SELECT * FROM vendeurs WHERE id = $id_utilisateur");
-if (mysqli_num_rows($res_vendeur) === 0) {
-    echo "Vous devez être un vendeur pour ajouter un article.";
+if (!isset($_SESSION['utilisateur']['id'])) {
+    header('Location: connexion.php');
     exit;
 }
 
-$message = "";
+$id_vendeur = intval($_SESSION['utilisateur']['id']);
+
+$message = '';
+
+// Traitement du formulaire
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nom = mysqli_real_escape_string($db, $_POST['nom'] ?? '');
-    $description = mysqli_real_escape_string($db, $_POST['description'] ?? '');
+    $nom = trim($_POST['nom'] ?? '');
+    $description = trim($_POST['description'] ?? '');
     $prix = floatval($_POST['prix'] ?? 0);
-    $type_vente = mysqli_real_escape_string($db, $_POST['type_vente'] ?? '');
+    $categorie = $_POST['categorie'] ?? null;
+    $rarete = $_POST['rarete'] ?? null;
+    $type_vente = $_POST['type_vente'] ?? 'immediate';
+    $qualite = trim($_POST['qualite'] ?? '');
+    $defaut = trim($_POST['defaut'] ?? '');
 
-    // Téléversement image (simplifié)
-    $image_url = 'Articles/Images/default.jpg';
-    if (!empty($_FILES['image']['tmp_name'])) {
-        $upload_dir = 'Articles/Images/';
-        $filename = basename($_FILES['image']['name']);
-        $target_path = $upload_dir . time() . '_' . $filename;
-        if (move_uploaded_file($_FILES['image']['tmp_name'], $target_path)) {
-            $image_url = $target_path;
-        }
-    }
-
-    // Insertion dans la base
-    $query = "INSERT INTO articles (nom, description, prix, type_vente, id_vendeur, image_url) 
-              VALUES ('$nom', '$description', $prix, '$type_vente', $id_utilisateur, '$image_url')";
-    if (mysqli_query($db, $query)) {
-        $message = "Article ajouté avec succès.";
+    // Validation simple
+    if (!$nom || !$description || $prix <= 0 || !$categorie || !$rarete || !$type_vente) {
+        $message = "Merci de remplir tous les champs obligatoires correctement.";
     } else {
-        $message = "Erreur lors de l'ajout de l'article : " . mysqli_error($db);
+        // Gestion de l'upload de l'image
+        $image_url = null;
+        if (!empty($_FILES['image']['name'])) {
+            $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
+            if (in_array($_FILES['image']['type'], $allowed_types)) {
+                $ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+                $filename = uniqid() . '.' . $ext;
+                $destination = 'Articles/Images/' . $filename;
+                if (move_uploaded_file($_FILES['image']['tmp_name'], $destination)) {
+                    $image_url = $filename;
+                } else {
+                    $message = "Erreur lors de l'upload de l'image.";
+                }
+            } else {
+                $message = "Format d'image non supporté. Formats acceptés : jpeg, png, gif.";
+            }
+        }
+
+        if (!$message) {
+            // Insertion dans la table articles
+            $stmt = mysqli_prepare($db, "INSERT INTO articles 
+                (id_vendeur, nom, description, prix_initial, categorie, rarete, type_vente, qualite, defaut) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            mysqli_stmt_bind_param($stmt, "issdsssss",
+                $id_vendeur, $nom, $description, $prix, $categorie, $rarete, $type_vente, $qualite, $defaut);
+            mysqli_stmt_execute($stmt);
+            $id_article = mysqli_stmt_insert_id($stmt);
+            mysqli_stmt_close($stmt);
+
+            // Insertion photo si image uploadée
+            if ($image_url) {
+                $stmt2 = mysqli_prepare($db, "INSERT INTO photos (article_id, url) VALUES (?, ?)");
+                mysqli_stmt_bind_param($stmt2, "is", $id_article, $image_url);
+                mysqli_stmt_execute($stmt2);
+                mysqli_stmt_close($stmt2);
+            }
+
+            $message = "Article ajouté avec succès !";
+        }
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -51,14 +77,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="style.css">
     <style>
         nav a[href="ajouter_article.php"] { background-color: orange; color: white; }
-        form { max-width: 600px; margin: 20px auto; }
-        label { display: block; margin-top: 15px; font-weight: bold; }
+        label { display: block; margin: 10px 0 5px; }
         input[type="text"], input[type="number"], textarea, select {
-            width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid #ccc;
+            width: 300px; padding: 5px;
         }
-        button { margin-top: 20px; background-color: brown; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; }
-        .error { color: red; }
-        .success { color: green; font-weight: bold; }
+        button {
+            margin-top: 15px;
+            background-color: brown;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .message {
+            color: green;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
@@ -80,29 +116,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <section>
         <h1>Ajouter un Article</h1>
-        
-         <?php if ($message): ?>
-                <p style="color:green;"><?= htmlspecialchars($message) ?></p>
-            <?php endif; ?>
 
-            <form method="post" enctype="multipart/form-data">
-                <label>Nom : <input type="text" name="nom" required></label><br><br>
-                <label>Description :<br><textarea name="description" rows="5" cols="40" required></textarea></label><br><br>
-                <label>Prix (€) : <input type="number" name="prix" step="0.01" required></label><br><br>
-                <label>Type de vente :
-                    <select name="type_vente" required>
-                        <option value="immediate">Achat immédiat</option>
-                        <option value="negociation">Négociation</option>
-                        <option value="enchere">Enchère</option>
-                    </select>
-                </label><br><br>
-                <label>Image : <input type="file" name="image" accept="image/*"></label><br><br>
-                <button type="submit">Ajouter l'article</button>
-            </form>
+        <?php if ($message): ?>
+            <p class="message"><?= htmlspecialchars($message) ?></p>
+        <?php endif; ?>
 
-            <br><a href="votrecompte.php">⬅ Retour à votre compte</a>
-      
+        <form method="post" enctype="multipart/form-data">
+            <label>Nom :</label>
+            <input type="text" name="nom" required>
 
+            <label>Description :</label>
+            <textarea name="description" rows="5" required></textarea>
+
+            <label>Prix (€) :</label>
+            <input type="number" name="prix" step="0.01" required min="0.01">
+
+            <label>Catégorie :</label>
+            <select name="categorie" required>
+                <option value="">-- Choisir --</option>
+                <option value="Meubles et objets d’art">Meubles et objets d’art</option>
+                <option value="Accessoire VIP">Accessoire VIP</option>
+                <option value="Materiels scolaires">Materiels scolaires</option>
+            </select>
+
+            <label>Rareté :</label>
+            <select name="rarete" required>
+                <option value="">-- Choisir --</option>
+                <option value="Rares">Rares</option>
+                <option value="Haut de gamme">Haut de gamme</option>
+                <option value="Réguliers">Réguliers</option>
+            </select>
+
+            <label>Type de vente :</label>
+            <select name="type_vente" required>
+                <option value="immediate">Achat immédiat</option>
+                <option value="negociation">Négociation</option>
+                <option value="meilleure offre">Meilleure offre</option>
+            </select>
+
+            <label>Qualité :</label>
+            <input type="text" name="qualite">
+
+            <label>Défaut :</label>
+            <input type="text" name="defaut">
+
+            <label>Image :</label>
+            <input type="file" name="image" accept="image/*">
+
+            <button type="submit">Ajouter l'article</button>
+        </form>
+
+        <br><a href="votrecompte.php">⬅ Retour à votre compte</a>
     </section>
 
     <footer>
@@ -121,8 +185,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 </body>
 </html>
-
-
-
-
-   

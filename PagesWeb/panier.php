@@ -11,14 +11,14 @@ if (!isset($_SESSION['utilisateur']['id'])) {
 $idUtilisateur = intval($_SESSION['utilisateur']['id']);
 
 // Vérifie s'il est dans la table vendeurs
-$stmt = mysqli_prepare($db, "SELECT id FROM vendeurs WHERE id = ?");
+$stmt = mysqli_prepare($db, "SELECT id FROM clients WHERE id = ?");
 mysqli_stmt_bind_param($stmt, 'i', $idUtilisateur);
 mysqli_stmt_execute($stmt);
-mysqli_stmt_bind_result($stmt, $estVendeur);
+mysqli_stmt_bind_result($stmt, $estClient);
 mysqli_stmt_fetch($stmt);
 mysqli_stmt_close($stmt);
 
-if (!$estVendeur) {
+if (!$estClient) {
     // Pas vendeur, donc redirection
     header('Location: votrecompte.php?redirect=panier');
     exit;
