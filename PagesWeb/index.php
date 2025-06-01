@@ -21,11 +21,11 @@ if (isset($_SESSION['utilisateur'])) {
                    ($is_client ? "Connecté Client" : "Connecté $pseudo_vendeur");
 }
 
-// Articles les plus récents pour le carrousel (9 derniers)
 $carrousel_articles = [];
 $sql_carrousel = "SELECT a.id, a.nom, a.prix_initial, p.url
                   FROM articles a
                   JOIN photos p ON a.id = p.article_id
+                  WHERE a.vendu = 0
                   ORDER BY a.date_publication DESC
                   LIMIT 9";
 $res1 = mysqli_query($db, $sql_carrousel);
@@ -38,14 +38,16 @@ $ventes_flash = [];
 $sql_flash = "SELECT a.id, a.nom, a.prix_initial, p.url
               FROM articles a
               JOIN photos p ON a.id = p.article_id
-              WHERE a.type_vente = 'immediate'
+              WHERE a.type_vente = 'immediate' AND a.vendu = 0
               ORDER BY a.date_publication DESC
               LIMIT 9";
 $res2 = mysqli_query($db, $sql_flash);
 while ($row = mysqli_fetch_assoc($res2)) {
     $ventes_flash[] = $row;
 }
+
 mysqli_close($db);
+
 ?>
 
 
@@ -221,10 +223,10 @@ mysqli_close($db);
     <nav>
         <a href="index.php">Accueil</a>
         <a href="toutparcourir.php">Tout Parcourir</a>
-        <a href="#">Notifications</a>
         <a href="panier.php">Panier</a>
-        <a href="votrecompte.php">Votre Compte</a>
         <a href="mesarticles.php">Mes Articles</a>
+        <a href="notification.php">Notifications</a>
+        <a href="votrecompte.php">Votre Compte</a>
     </nav>
 
     <section>

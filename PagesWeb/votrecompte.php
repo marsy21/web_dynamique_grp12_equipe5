@@ -83,10 +83,10 @@ $vendeur_info = $is_vendeur ? mysqli_fetch_assoc($res_vendeur) : null;
     <nav>
         <a href="index.php">Accueil</a>
         <a href="toutparcourir.php">Tout Parcourir</a>
-        <a href="notification.php">Notifications</a>
         <a href="panier.php">Panier</a>
-        <a href="votrecompte.php">Votre Compte</a>
         <a href="mesarticles.php">Mes Articles</a>
+        <a href="notification.php">Notifications</a>
+        <a href="votrecompte.php">Votre Compte</a>
     </nav>
 
     <section>
@@ -94,7 +94,13 @@ $vendeur_info = $is_vendeur ? mysqli_fetch_assoc($res_vendeur) : null;
       <p>Email : <?= htmlspecialchars($utilisateur['email']) ?></p>
       <p>Date de création : <?= htmlspecialchars($utilisateur['date_creation']) ?></p>
       <br>
+<?php if ($utilisateur && $utilisateur['role'] === 'admin'): ?>
+    <div style="background-color: #f39c12; color: white; padding: 10px; text-align: center; font-weight: bold;">
+      Connecté en tant qu'administrateur
+    </div><a href="admin.php"><button type="button">Les comptes Utilisateur</button></a>
 
+
+  <?php endif; ?>
       <?php if ($message): ?>
         <p style="color:green;"><?= $message ?></p>
       <?php endif; ?>
@@ -116,6 +122,12 @@ $vendeur_info = $is_vendeur ? mysqli_fetch_assoc($res_vendeur) : null;
             </ul>
             <a href="?edit=client"><button>Modifier infos client</button></a>
             <a href="panier.php"><button>🛒 Mon panier</button></a>
+<a href="achete.php"><button>Mes Depenses</button></a>
+
+            <?php if (isset($_GET['paiement']) && $_GET['paiement'] === 'success'): ?>
+            <div class="success-message">🎉 Paiement effectué avec succès !</div>
+          <?php endif; ?>
+
           <?php endif; ?>
         </div>
     <?php else: ?>
@@ -141,7 +153,9 @@ $vendeur_info = $is_vendeur ? mysqli_fetch_assoc($res_vendeur) : null;
               <li>Pseudo : <?= htmlspecialchars($vendeur_info['pseudo']) ?></li>
             </ul>
             <a href="?edit=vendeur"><button>Modifier infos vendeur</button></a>
-            <a href="mesarticles.php"><button>📦 Mes articles en vente</button></a>
+            <a href="mesarticles.php"><button> Mes articles en vente</button></a>
+            <a href="vendu.php"><button>Mes Ventes</button></a>
+
           <?php endif; ?>
         </div>
       <?php else: ?>

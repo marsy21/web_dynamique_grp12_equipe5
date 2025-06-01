@@ -1,69 +1,93 @@
-<?php
+<?php 
 session_start();
+include 'db.php';
+
 if (!isset($_SESSION['utilisateur'])) {
     header("Location: connexion.php");
     exit;
 }
 
-include 'db.php';
-$id = $_SESSION['utilisateur']['id'];
-$erreur = "";
+$idUtilisateur = $_SESSION['utilisateur']['id'];
+$erreur = '';
+$success = false;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Sécurisation des champs "Adresse"
-    $adresse1 = mysqli_real_escape_string($db, $_POST['adresse1'] ?? '');
-    $adresse2 = mysqli_real_escape_string($db, $_POST['adresse2'] ?? '');
-    $ville = mysqli_real_escape_string($db, $_POST['ville'] ?? '');
-    $code_postal = mysqli_real_escape_string($db, $_POST['code_postal'] ?? '');
-    $pays = mysqli_real_escape_string($db, $_POST['pays'] ?? '');
-    $telephone = mysqli_real_escape_string($db, $_POST['telephone'] ?? '');
+    // Champs carte (nettoyés)
+    $type_carte = $_POST['type_carte'] ?? '';
+    $numero_carte = preg_replace('/\D/', '', $_POST['numero_carte'] ?? '');
+    $nom_carte = trim($_POST['nom_carte'] ?? '');
+    $expiration = $_POST['expiration'] ?? '';
+    $code_securite = preg_replace('/\D/', '', $_POST['code_securite'] ?? '');
 
-    // Sécurisation des champs "Carte"
-    $type_carte = mysqli_real_escape_string($db, $_POST['type_carte'] ?? '');
-    $numero_carte = mysqli_real_escape_string($db, $_POST['numero_carte'] ?? '');
-    $nom_carte = mysqli_real_escape_string($db, $_POST['nom_carte'] ?? '');
-    $expiration = mysqli_real_escape_string($db, $_POST['expiration'] ?? '');
-    $code_securite = mysqli_real_escape_string($db, $_POST['code_securite'] ?? '');
+    $errors = [];
 
-    // Traitement adresse client
-    $check = mysqli_query($db, "SELECT * FROM clients WHERE id = $id");
-    if (mysqli_num_rows($check) == 0) {
-        $stmt = mysqli_prepare($db, "INSERT INTO clients (id, adresse1, adresse2, ville, code_postal, pays, telephone) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        mysqli_stmt_bind_param($stmt, "issssss", $id, $adresse1, $adresse2, $ville, $code_postal, $pays, $telephone);
-    } else {
-        $stmt = mysqli_prepare($db, "UPDATE clients SET adresse1 = ?, adresse2 = ?, ville = ?, code_postal = ?, pays = ?, telephone = ? WHERE id = ?");
-        mysqli_stmt_bind_param($stmt, "ssssssi", $adresse1, $adresse2, $ville, $code_postal, $pays, $telephone, $id);
+    // Validations
+    if (!in_array($type_carte, ['Visa','MasterCard','AmericanExpress','PayPal'])) {
+        $errors[] = "Type de carte invalide.";
     }
-
-    // Exécution de l'insertion ou mise à jour adresse
-    if (!mysqli_stmt_execute($stmt)) {
-        $erreur = "Erreur lors de l'enregistrement de l'adresse.";
+    if (strlen($numero_carte) < 12 || strlen($numero_carte) > 20) {
+        $errors[] = "Numéro de carte invalide.";
     }
-
-    // Traitement carte bancaire
-    $verif = mysqli_query($db, "SELECT * FROM cartesreelles WHERE numero_carte = '$numero_carte'");
-    if (mysqli_num_rows($verif) == 0) {
-        $stmt_carte = mysqli_prepare($db, "INSERT INTO cartesreelles (type_carte, numero_carte, nom_carte, expiration, code_securite) VALUES (?, ?, ?, ?, ?)");
-        mysqli_stmt_bind_param($stmt_carte, "sssss", $type_carte, $numero_carte, $nom_carte, $expiration, $code_securite);
-
-        if (!mysqli_stmt_execute($stmt_carte)) {
-            $erreur = "Erreur lors de l'enregistrement de la carte.";
+    if (empty($nom_carte)) {
+        $errors[] = "Nom sur la carte requis.";
+    }
+    if (!empty($expiration)) {
+        $date_exp = DateTime::createFromFormat('Y-m-d', $expiration);
+        if ($date_exp) {
+            $date_exp->modify('last day of this month');
+            $now = new DateTime();
+            if ($date_exp < $now) {
+                $errors[] = "Carte expirée.";
+            }
+            // ✅ On formate la date au bon format pour l'enregistrement
+            $exp_format = substr($expiration, 0, 7) . '-01';
+        } else {
+            $errors[] = "Format de date invalide.";
         }
     } else {
-        $erreur = "Cette carte existe déjà dans notre système.";
+        $errors[] = "Date d'expiration invalide.";
     }
 
-    // Redirection uniquement si tout s'est bien passé
-    if (empty($erreur)) {
-        $from = $_SESSION['last_page'] ?? 'votrecompte.php';
-        header("Location: $from");
-        exit;
+    if (strlen($code_securite) < 3 || strlen($code_securite) > 4) {
+        $errors[] = "Code de sécurité invalide.";
+    }
+
+    if (!empty($errors)) {
+        $erreur = implode('<br>', $errors);
     } else {
-        echo "<p style='color:red;'>$erreur</p>";
+        // 👉 Insertion de la carte avec date formatée
+        $stmt = mysqli_prepare($db, "INSERT INTO cartesreelles (type_carte, numero_carte, nom_carte, expiration, code_securite) VALUES (?, ?, ?, ?, ?)");
+        mysqli_stmt_bind_param($stmt, "sssss", $type_carte, $numero_carte, $nom_carte, $exp_format, $code_securite);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+
+        // Adresse
+        $adresse1 = mysqli_real_escape_string($db, $_POST['adresse1'] ?? '');
+        $adresse2 = mysqli_real_escape_string($db, $_POST['adresse2'] ?? '');
+        $ville = mysqli_real_escape_string($db, $_POST['ville'] ?? '');
+        $code_postal = mysqli_real_escape_string($db, $_POST['code_postal'] ?? '');
+        $pays = mysqli_real_escape_string($db, $_POST['pays'] ?? '');
+        $telephone = mysqli_real_escape_string($db, $_POST['telephone'] ?? '');
+
+        // Enregistrement / MAJ adresse
+        $check = mysqli_query($db, "SELECT * FROM clients WHERE id = $idUtilisateur");
+        if (mysqli_num_rows($check) == 0) {
+            $stmt = mysqli_prepare($db, "INSERT INTO clients (id, adresse1, adresse2, ville, code_postal, pays, telephone) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            mysqli_stmt_bind_param($stmt, "issssss", $idUtilisateur, $adresse1, $adresse2, $ville, $code_postal, $pays, $telephone);
+        } else {
+            $stmt = mysqli_prepare($db, "UPDATE clients SET adresse1 = ?, adresse2 = ?, ville = ?, code_postal = ?, pays = ?, telephone = ? WHERE id = ?");
+            mysqli_stmt_bind_param($stmt, "ssssssi", $adresse1, $adresse2, $ville, $code_postal, $pays, $telephone, $idUtilisateur);
+        }
+
+        if (!mysqli_stmt_execute($stmt)) {
+            $erreur = "Erreur lors de l'enregistrement de l'adresse.";
+        } else {
+            $from = $_SESSION['last_page'] ?? 'votrecompte.php';
+            header("Location: $from");
+            exit;
+        }
     }
 }
-
-
 ?>
 
 
@@ -90,13 +114,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <img src="Articles/Images/logo.png" alt="Logo Agora">
     </header>
 
-      <nav>
+    <nav>
         <a href="index.php">Accueil</a>
         <a href="toutparcourir.php">Tout Parcourir</a>
-        <a href="#">Notifications</a>
         <a href="panier.php">Panier</a>
-        <a href="votrecompte.php">Votre Compte</a>
         <a href="mesarticles.php">Mes Articles</a>
+        <a href="notification.php">Notifications</a>
+        <a href="votrecompte.php">Votre Compte</a>
     </nav>
 
     <section>

@@ -51,6 +51,10 @@ mysqli_stmt_close($stmt);
     <title>Enchères pour l'article #<?= htmlspecialchars($idArticle) ?></title>
     <link rel="stylesheet" href="style.css" />
     <style>
+        nav a[href="mesarticles.php"] {
+      background-color: orange;
+      color: white;
+    }
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
     </style>
@@ -66,8 +70,9 @@ mysqli_stmt_close($stmt);
         <a href="index.php">Accueil</a>
         <a href="toutparcourir.php">Tout Parcourir</a>
         <a href="panier.php">Panier</a>
-        <a href="votrecompte.php">Votre Compte</a>
         <a href="mesarticles.php">Mes Articles</a>
+        <a href="notification.php">Notifications</a>
+        <a href="votrecompte.php">Votre Compte</a>
     </nav>
 
     <section>

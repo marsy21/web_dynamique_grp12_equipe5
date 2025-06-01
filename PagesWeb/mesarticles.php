@@ -96,10 +96,10 @@ if ($result) {
     <nav>
         <a href="index.php">Accueil</a>
         <a href="toutparcourir.php">Tout Parcourir</a>
-        <a href="#">Notifications</a>
         <a href="panier.php">Panier</a>
-        <a href="votrecompte.php">Votre Compte</a>
         <a href="mesarticles.php">Mes Articles</a>
+        <a href="notification.php">Notifications</a>
+        <a href="votrecompte.php">Votre Compte</a>
     </nav>
 
     <section>

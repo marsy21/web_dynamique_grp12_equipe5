@@ -46,9 +46,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajouter'])) {
         }
 
         if (mysqli_stmt_execute($stmt)) {
-            $message = "✅ Notification ajoutée avec succès.";
+            $message = " Notification ajoutée avec succès.";
         } else {
-            $message = "❌ Erreur : " . mysqli_stmt_error($stmt);
+            $message = " Erreur : " . mysqli_stmt_error($stmt);
         }
 
         mysqli_stmt_close($stmt);
@@ -114,6 +114,10 @@ mysqli_stmt_close($stmt);
     <title>Mes Notifications d'Alerte</title>
     <link rel="stylesheet" href="style.css" />
     <style>
+        nav a[href="notification.php"] {
+      background-color: orange;
+      color: white;
+    }
         table { border-collapse: collapse; width: 100%; margin-top: 20px; }
         th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
         .btn { padding: 6px 12px; background-color: orange; border: none; color: white; cursor: pointer; text-decoration: none; }
@@ -121,7 +125,7 @@ mysqli_stmt_close($stmt);
         .btn-toggle { background-color: #555; }
         .message { margin: 15px 0; font-weight: bold; color: green; }
         .error { color: red; }
-        form { margin-top: 20px; max-width: 600px; }
+        form { margin-top: 20px; max-width: 50%; margin-left: 25%; }/*a mettre partout */
         label { display: block; margin-top: 10px; }
         input, select { width: 100%; padding: 8px; font-size: 1em; margin-top: 5px; }
     </style>
@@ -137,9 +141,9 @@ mysqli_stmt_close($stmt);
         <a href="index.php">Accueil</a>
         <a href="toutparcourir.php">Tout Parcourir</a>
         <a href="panier.php">Panier</a>
-        <a href="votrecompte.php">Votre Compte</a>
         <a href="mesarticles.php">Mes Articles</a>
-        <a href="notification.php" style="background-color: orange; color: white;">Notifications</a>
+        <a href="notification.php">Notifications</a>
+        <a href="votrecompte.php">Votre Compte</a>
     </nav>
 
     <section>

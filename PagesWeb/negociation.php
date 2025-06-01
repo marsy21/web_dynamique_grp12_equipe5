@@ -140,8 +140,9 @@ mysqli_stmt_close($stmt);
         <a href="index.php">Accueil</a>
         <a href="toutparcourir.php">Tout Parcourir</a>
         <a href="panier.php">Panier</a>
-        <a href="votrecompte.php">Votre Compte</a>
         <a href="mesarticles.php">Mes Articles</a>
+        <a href="notification.php">Notifications</a>
+        <a href="votrecompte.php">Votre Compte</a>
     </nav>
 
     <section>
