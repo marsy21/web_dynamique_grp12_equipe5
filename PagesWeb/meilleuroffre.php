@@ -46,7 +46,7 @@ if ($enchere_terminee) {
         // Afficher message temporaire puis rediriger vers paiement
         echo "<script>
             alert('Votre enchère a été acceptée. Vous allez être redirigé vers le paiement.');
-            window.location.href = 'paiement.php?id=" . $article_id . "';
+            window.location.href = 'paiement_enchere.php?id=" . $article_id . "';
         </script>";
         exit;
     }
