@@ -59,20 +59,23 @@ if (isset($_GET['supprimer'])) {
     exit;
 }
 
-// Récupérer tous les articles dans le panier du client avec détails
 $sql = "
-    SELECT p.article_id, a.nom, a.prix_initial, LOWER(a.type_vente) AS type_vente, ph.url
+    SELECT p.article_id, a.nom, a.prix_initial, LOWER(a.type_vente) AS type_vente, ph.url,
+           e.terminee, e.client_id AS enchere_client_id
     FROM panier p
     JOIN articles a ON p.article_id = a.id
     LEFT JOIN photos ph ON a.id = ph.article_id
+    LEFT JOIN encheres e ON e.article_id = a.id AND e.terminee = 1 AND e.client_id = ?
     WHERE p.client_id = ?
     GROUP BY p.article_id
 ";
-
 $stmt = mysqli_prepare($db, $sql);
-mysqli_stmt_bind_param($stmt, "i", $client_id);
+mysqli_stmt_bind_param($stmt, "ii", $client_id, $client_id);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
+
+
+
 
 $articles = [
     'immediate' => [],
@@ -121,6 +124,16 @@ if ($result) {
             margin-top: 20px;
             background-color: brown;
             color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
+        }
+        .btn-payer1 {
+            margin-top: 20px;
+            background-color: lightblue;
+            color: Green;
             padding: 12px 25px;
             border-radius: 8px;
             text-decoration: none;
@@ -185,8 +198,12 @@ if ($result) {
                                 <td>
                                     <?php if ($type === 'immediate'): ?>
                                         <a href="paiement.php" class="btn-payer">Procéder au paiement</a>
-                                    <?php elseif ($type === 'meilleure offre'): ?>
-                                        <a href="meilleuroffre.php?id=<?= $art['article_id'] ?>" class="btn-payer">Enchérir</a>
+                                   <?php elseif ($type === 'meilleure offre'): ?>
+                                    <?php if ($art['terminee'] == 1 && $art['enchere_client_id'] == $client_id): ?>
+                                                <a href="meilleuroffre.php?id=<?= intval($art['article_id']) ?>" class="btn-payer1">Choisi</a>
+                                    <?php else: ?>
+                                        <a href="meilleuroffre.php?id=<?= intval($art['article_id']) ?>" class="btn-payer">Enchérir</a>
+                                    <?php endif; ?>
                                     <?php elseif ($type === 'negociation'): ?>
                                         <a href="negociation.php?id=<?= $art['article_id'] ?>" class="btn-payer">Négocier</a>
                                     <?php endif; ?>

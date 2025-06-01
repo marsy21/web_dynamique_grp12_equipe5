@@ -28,24 +28,51 @@ if (!$article) {
     die("Article introuvable.");
 }
 
-// Récupérer la meilleure offre en enchère
-$sql_max = "SELECT MAX(prix_max) as max_prix FROM encheres WHERE article_id = ?";
-$stmt = mysqli_prepare($db, $sql_max);
+// Vérifier si une enchère est déjà terminée
+$sql_terminee = "SELECT * FROM encheres WHERE article_id = ? AND terminee = 1 LIMIT 1";
+$stmt = mysqli_prepare($db, $sql_terminee);
 mysqli_stmt_bind_param($stmt, "i", $article_id);
 mysqli_stmt_execute($stmt);
-$result_max = mysqli_stmt_get_result($stmt);
-$max_row = mysqli_fetch_assoc($result_max);
+$result_terminee = mysqli_stmt_get_result($stmt);
+$enchere_terminee = mysqli_fetch_assoc($result_terminee);
 mysqli_stmt_close($stmt);
 
-$max_prix = $max_row['max_prix'] ?? $article['prix_initial'];
+if ($enchere_terminee) {
+    // Enchère déjà terminée
+    $max_prix = $enchere_terminee['prix_max'];
+    $enchere_ouverte = false;
+} 
+    if ($enchere_terminee['client_id'] == $idUtilisateur) {
+        // Afficher message temporaire puis rediriger vers paiement
+        echo "<script>
+            alert('Votre enchère a été acceptée. Vous allez être redirigé vers le paiement.');
+            window.location.href = 'paiement.php?id=" . $article_id . "';
+        </script>";
+        exit;
+    }
+else {
+    // Chercher la meilleure offre actuelle
+    $sql_max = "SELECT MAX(prix_max) as max_prix FROM encheres WHERE article_id = ?";
+    $stmt = mysqli_prepare($db, $sql_max);
+    mysqli_stmt_bind_param($stmt, "i", $article_id);
+    mysqli_stmt_execute($stmt);
+    $result_max = mysqli_stmt_get_result($stmt);
+    $max_row = mysqli_fetch_assoc($result_max);
+    mysqli_stmt_close($stmt);
 
+    $max_prix = $max_row['max_prix'] ?? $article['prix_initial'];
+    $enchere_ouverte = true;
+}
+
+// Traitement de l'offre si formulaire soumis
 $message = "";
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['offre'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['offre']) && $enchere_ouverte) {
     $offre = floatval($_POST['offre']);
+
     if ($offre <= $max_prix) {
         $message = "Votre offre doit être supérieure à la meilleure offre actuelle (" . number_format($max_prix, 2, ',', '') . " €).";
     } else {
-        // Insérer la nouvelle enchère
+        // Insertion de l'offre
         $sql_insert = "INSERT INTO encheres (article_id, client_id, prix_max) VALUES (?, ?, ?)";
         $stmt = mysqli_prepare($db, $sql_insert);
         mysqli_stmt_bind_param($stmt, "iid", $article_id, $idUtilisateur, $offre);
@@ -58,8 +85,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['offre'])) {
         mysqli_stmt_close($stmt);
     }
 }
-
 ?>
+
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -103,11 +130,22 @@ nav a[href="panier.php"] {
         <p><strong>Prix initial :</strong> <?= number_format($article['prix_initial'], 2, ',', '') ?> €</p>
         <p class="info">Meilleure offre actuelle : <strong><?= number_format($max_prix, 2, ',', '') ?> €</strong></p>
 
-        <form method="post" action="">
-            <label for="offre">Votre offre (en €) :</label><br>
-            <input type="number" step="0.01" min="<?= $max_prix + 0.01 ?>" name="offre" id="offre" required><br><br>
-            <button type="submit">Proposer une offre</button>
-        </form>
+        <?php if (!$enchere_ouverte): ?>
+    <p class="message">⚠️ L'article a déjà trouvé preneur. Paiement en attente.</p>
+<?php else: ?>
+    <form method="post" action="">
+        <label for="offre">Votre offre (en €) :</label><br>
+        <input type="number" step="0.01" min="<?= $max_prix + 0.01 ?>" name="offre" id="offre" required><br><br>
+        <button type="submit">Proposer une offre</button>
+    </form>
+
+    <?php if ($message): ?>
+        <p class="message <?= strpos($message, 'Erreur') !== false || strpos($message, 'doit être') !== false ? 'error' : '' ?>">
+            <?= htmlspecialchars($message) ?>
+        </p>
+    <?php endif; ?>
+<?php endif; ?>
+
 
         <?php if ($message): ?>
             <p class="message <?= strpos($message, 'Erreur') !== false || strpos($message, 'doit être') !== false ? 'error' : '' ?>">

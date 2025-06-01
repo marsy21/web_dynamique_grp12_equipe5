@@ -21,17 +21,27 @@ if (mysqli_stmt_num_rows($stmt) === 0) {
     header('Location: mesarticles.php');
     exit;
 }
+// Si un bouton "accepter" a été cliqué
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accepter_id'])) {
+    $enchereId = intval($_POST['accepter_id']);
+    $update = mysqli_prepare($db, "UPDATE encheres SET terminee = 1 WHERE id = ? AND article_id = ?");
+    mysqli_stmt_bind_param($update, 'ii', $enchereId, $idArticle);
+    mysqli_stmt_execute($update);
+    mysqli_stmt_close($update);
+}
+
 
 mysqli_stmt_close($stmt);
 
 // Récupérer toutes les enchères pour cet article, avec info client (nom/prenom)
 $sql = "
-    SELECT e.id, e.prix_max, e.date_enchere, u.nom, u.prenom
+    SELECT e.id, e.prix_max, e.date_enchere, e.terminee, u.nom, u.prenom
     FROM encheres e
     LEFT JOIN utilisateurs u ON e.client_id = u.id
     WHERE e.article_id = ?
     ORDER BY e.prix_max DESC, e.date_enchere ASC
 ";
+
 $stmt = mysqli_prepare($db, $sql);
 mysqli_stmt_bind_param($stmt, 'i', $idArticle);
 mysqli_stmt_execute($stmt);
@@ -93,11 +103,22 @@ mysqli_stmt_close($stmt);
                 <tbody>
                     <?php foreach ($encheres as $enchere): ?>
                         <tr>
-                            <td><?= htmlspecialchars($enchere['nom'] ?? 'Anonyme') ?></td>
-                            <td><?= htmlspecialchars($enchere['prenom'] ?? '') ?></td>
-                            <td><?= number_format($enchere['prix_max'], 2, ',', ' ') ?></td>
-                            <td><?= htmlspecialchars($enchere['date_enchere']) ?></td>
-                        </tr>
+    <td><?= htmlspecialchars($enchere['nom'] ?? 'Anonyme') ?></td>
+    <td><?= htmlspecialchars($enchere['prenom'] ?? '') ?></td>
+    <td><?= number_format($enchere['prix_max'], 2, ',', ' ') ?></td>
+    <td><?= htmlspecialchars($enchere['date_enchere']) ?></td>
+    <td>
+        <?php if (!isset($enchere['terminee']) || !$enchere['terminee']): ?>
+            <form method="post">
+                <input type="hidden" name="accepter_id" value="<?= $enchere['id'] ?>">
+                <button type="submit">Accepter</button>
+            </form>
+        <?php else: ?>
+            ✅ En attente de paiement
+        <?php endif; ?>
+    </td>
+</tr>
+
                     <?php endforeach; ?>
                 </tbody>
             </table>
