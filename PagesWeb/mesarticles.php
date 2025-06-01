@@ -33,14 +33,15 @@ if (isset($_GET['supprimer'])) {
     exit;
 }
 
-// Récupérer tous les articles du vendeur avec photo
+// Recuperer tous les articles du vendeur avec photo non vendu
 $sql = "
-    SELECT a.id, a.nom, a.prix_initial, a.type_vente, ph.url
+    SELECT a.id, a.nom, a.prix_initial, a.type_vente, a.vendu, ph.url
     FROM articles a
     LEFT JOIN photos ph ON a.id = ph.article_id
-    WHERE a.id_vendeur = $id_vendeur
+    WHERE a.id_vendeur = $id_vendeur AND a.vendu = 0
     GROUP BY a.id
 ";
+
 $result = mysqli_query($db, $sql);
 
 $articles = [
@@ -82,7 +83,11 @@ if ($result) {
         }
         a.supprimer { color: red; text-decoration: none; font-weight: bold; }
 
-        
+            .vendu {
+        color: green;
+        font-weight: bold;
+    }
+
     
     </style>
 </head>
