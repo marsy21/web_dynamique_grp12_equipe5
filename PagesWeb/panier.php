@@ -10,7 +10,7 @@ if (!isset($_SESSION['utilisateur']['id'])) {
 
 $idUtilisateur = intval($_SESSION['utilisateur']['id']);
 
-// Vérifie s'il est dans la table vendeurs
+
 $stmt = mysqli_prepare($db, "SELECT id FROM clients WHERE id = ?");
 mysqli_stmt_bind_param($stmt, 'i', $idUtilisateur);
 mysqli_stmt_execute($stmt);
@@ -186,9 +186,9 @@ if ($result) {
                                     <?php if ($type === 'immediate'): ?>
                                         <a href="paiement.php" class="btn-payer">Procéder au paiement</a>
                                     <?php elseif ($type === 'meilleure offre'): ?>
-                                        <a href="encherir.php?id=<?= $art['article_id'] ?>" class="btn-payer">Enchérir</a>
+                                        <a href="meilleuroffre.php?id=<?= $art['article_id'] ?>" class="btn-payer">Enchérir</a>
                                     <?php elseif ($type === 'negociation'): ?>
-                                        <a href="negocier.php?id=<?= $art['article_id'] ?>" class="btn-payer">Négocier</a>
+                                        <a href="negociation.php?id=<?= $art['article_id'] ?>" class="btn-payer">Négocier</a>
                                     <?php endif; ?>
                                 </td>
                                 <td><a class="supprimer" href="panier.php?supprimer=<?= intval($art['article_id']) ?>" onclick="return confirm('Supprimer cet article ?');">X</a></td>
